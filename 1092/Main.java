@@ -24,12 +24,12 @@ public class Main
 				line = sc.nextLine();
 				Scanner lineScanner = new Scanner(line);
 				Vertex vertex = new Vertex();
-				vertex.id = lineScanner.nextInt();
+				vertex.id = lineScanner.nextInt() - 1;
 				vertex.posX = lineScanner.nextInt();
 				vertex.posY = lineScanner.nextInt();
 				while (lineScanner.hasNextInt())
 				{
-					int neighbor = lineScanner.nextInt();
+					int neighbor = lineScanner.nextInt() - 1;
 					vertex.neighbor.add(neighbor);
 				}
 
