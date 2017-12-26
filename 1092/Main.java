@@ -67,6 +67,7 @@ public class Main
 				vertex.id = lineScanner.nextInt() - 1;
 				vertex.posX = lineScanner.nextInt();
 				vertex.posY = lineScanner.nextInt();
+				lineScanner.nextInt();
 				while (lineScanner.hasNextInt())
 				{
 					int neighbor = lineScanner.nextInt() - 1;
