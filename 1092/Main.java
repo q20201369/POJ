@@ -13,7 +13,7 @@ public class Main
 			// test if the first vertex in tempRegion is connected to the last vertex, if yes, the region is good for length
 			for (int i = 0; i < tempRegion.size(); ++i)
 			{
-				System.out.print(i + ", ");
+				System.out.print(tempRegion.get(i) + ", ");
 			}
 			System.out.println(";");
 
