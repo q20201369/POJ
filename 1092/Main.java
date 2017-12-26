@@ -1,8 +1,26 @@
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Main
 {
+	private static boolean areTwoVerticesConnected(Vector<Vertex> vertices, int a, int b)
+	{
+		return vertices.get(a).neighbor.contains(b);
+	}
+
+	private static boolean hasRegionDuplicatedVertices(Vector<Integer> region)
+	{
+		Set<Integer> unique = new HashSet<Integer>();
+		unique.addAll(region);
+
+		if (unique.size() != region.size())
+			return true;
+
+		return false;
+	}
+
 	private static void findRegion(Vector<Vertex> vertices, Vector<Vector<Integer>> regions, int startVertex, int regionSize, Vector<Integer> tempRegion)
 	{
 		int firstVertex = tempRegion.get(0);
@@ -10,7 +28,12 @@ public class Main
 
 		if (tempRegion.size() >= regionSize)
 		{
-			// test if the first vertex in tempRegion is connected to the last vertex, if yes, the region is good for length
+			if (!areTwoVerticesConnected(vertices, firstVertex, lastVertex))
+				return;
+
+			if (hasRegionDuplicatedVertices(tempRegion))
+				return;
+
 			for (int i = 0; i < tempRegion.size(); ++i)
 			{
 				System.out.print(tempRegion.get(i) + ", ");
