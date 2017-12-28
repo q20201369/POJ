@@ -72,17 +72,36 @@ public class Main
 			if (isInconsistent)
 				continue;
 
-			// find longest path
-			int smallest = 0;
+			// find all the roots in the forest
+			Vector<Boolean> roots = new Vector<Boolean>();
+			for (int i = 0; i < matrix.size(); ++i)
+			{
+				roots.add(true);
+			}
+
 			for (int j = 0; j < matrix.size(); ++j)
 			{
 				for (int i = 0; i < matrix.size(); ++i)
 				{
-					if (matrix.get(i).get(smallest) == 1)
+					if (matrix.get(i).get(j) == 1)
 					{
-						smallest = i;
+						// any vertex is the end of an edge is not a root
+						roots.set(j, false);
 					}
 				}
+			}
+
+			int rootsCount = 0;
+			for (int i = 0; i < matrix.size(); ++i)
+			{
+				if (roots.get(i) == true)
+					rootsCount++;
+			}
+
+			if (rootsCount > 1)
+			{
+				System.out.println("Sorted sequence cannot be determined.");
+				continue;
 			}
 		}
 	}
