@@ -190,6 +190,7 @@ public class Main
 
 						sizes.add(count);
 					}
+					Vector<Integer> sizesNoSort = (Vector<Integer>)sizes.clone();
 					Collections.sort(sizes);
 					boolean isIncremental = true;
 					for (int r = 0; r < sizes.size(); ++r)
@@ -200,7 +201,19 @@ public class Main
 
 					if (isIncremental)
 					{
-						Vector<Integer> longestPath = findLongestPath(matrix);
+						Vector<Integer> longestPath = new Vector<Integer>();
+						for (int k = 0; k < sizesNoSort.size(); ++k)
+						{
+							for (int s = 0; s < sizesNoSort.size(); ++s)
+							{
+								if (sizesNoSort.get(s) == k)
+								{
+									longestPath.add(0, s);
+									break;
+								}
+							}
+						}
+
 						System.out.print("Sorted sequence determined after " + (i+1) + " relations: ");
 						for (int j = 0; j < longestPath.size(); ++j)
 						{
