@@ -19,17 +19,18 @@ public class Main
 			int leftSubTreeIndex = 0;
 			int rightSubTreeIndex = 0;
 			boolean fixed = false;
-			for (int i = 0; i < treeNumberPerSize.get(leftSubTreeSize); ++i)
+
+			treeTotalNumber += treeNumberPerSize.get(leftSubTreeSize) * treeNumberPerSize.get(rightSubTreeSize);
+
+			if (treeTotalNumber > treeIndex)
 			{
-				treeTotalNumber += treeNumberPerSize.get(rightSubTreeSize);
-				if (treeTotalNumber > treeIndex)
-				{
-					leftSubTreeIndex = i;
-					treeTotalNumber -= treeNumberPerSize.get(rightSubTreeSize);
-					rightSubTreeIndex = treeIndex - treeTotalNumber;
-					fixed = true;
-					break;
-				}
+				treeTotalNumber -= treeNumberPerSize.get(leftSubTreeSize) * treeNumberPerSize.get(rightSubTreeSize);
+
+				int treeIndexStartsFromSpecificLeftTreeSize = treeIndex - treeTotalNumber;
+
+				leftSubTreeIndex = treeIndexStartsFromSpecificLeftTreeSize / treeNumberPerSize.get(rightSubTreeSize);
+				rightSubTreeIndex = treeIndexStartsFromSpecificLeftTreeSize % treeNumberPerSize.get(rightSubTreeSize);
+				fixed = true;
 			}
 
 			if (fixed)
