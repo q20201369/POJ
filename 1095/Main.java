@@ -15,16 +15,49 @@ public class Main
 		for (int leftSubTreeSize = 0; leftSubTreeSize <= treeSize - 1; ++leftSubTreeSize)
 		{
 			int rightSubTreeSize = treeSize - leftSubTreeSize - 1;
-			treeTotalNumber += treeNumberPerSize.get(leftSubTreeSize) * treeNumberPerSize.get(rightSubTreeSize);
-			if (treeTotalNumber > treeIndex)
+
+			int leftSubTreeIndex = 0;
+			int rightSubTreeIndex = 0;
+			boolean fixed = false;
+			for (int i = 0; i < treeNumberPerSize.get(leftSubTreeSize); ++i)
+			{
+				treeTotalNumber += treeNumberPerSize.get(rightSubTreeSize);
+				if (treeTotalNumber > treeIndex)
+				{
+					leftSubTreeIndex = i;
+					treeTotalNumber -= treeNumberPerSize.get(rightSubTreeSize);
+					rightSubTreeIndex = treeIndex - treeTotalNumber;
+					fixed = true;
+					break;
+				}
+			}
+
+			if (fixed)
 			{
 				Node x = new Node();
-				x.left = findTree(treeNumberPerSize, leftSubTreeSize, treeIndex);
-				x.right = findTree(treeNumberPerSize, rightSubTreeSize, treeIndex);
+				x.left = findTree(treeNumberPerSize, leftSubTreeSize, leftSubTreeIndex);
+				x.right = findTree(treeNumberPerSize, rightSubTreeSize, rightSubTreeIndex);
+				return x;
 			}
 		}
 
 		return null;
+	}
+
+	private static String translateTree(Node root)
+	{
+		if (root == null)
+			return "";
+
+		String left = "";
+		if (root.left != null)
+			left = "(" + translateTree(root.left) + ")";
+
+		String right = "";
+		if (root.right != null)
+			right = "(" + translateTree(root.right) + ")";
+
+		return left + "X" + right;
 	}
 
 	public static void main(String[] args)
@@ -42,7 +75,6 @@ public class Main
 				totalNumber += treeNumberPerSize.get(leftSubTreeSize) * treeNumberPerSize.get(rightSubTreeSize);
 			}
 			treeNumberPerSize.add(totalNumber);
-			System.out.println(treeSize + ": " + totalNumber);
 		}
 
 
@@ -53,7 +85,6 @@ public class Main
 		{
 			totalSize += treeNumberPerSize.get(treeSize);
 			treeIdLowerBound.add(totalSize);
-			System.out.println(treeSize + ": " + totalSize);
 		}
 
 		Scanner sc = new Scanner(System.in);
@@ -74,9 +105,10 @@ public class Main
 					break;
 				}
 			}
-			System.out.println(treeSize + " - " + treeIndexOfTheSameSize);
 
 			Node root = findTree(treeNumberPerSize, treeSize, treeIndexOfTheSameSize);
+			String output = translateTree(root);
+			System.out.println(output);
 		}
 	}
 }
