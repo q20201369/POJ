@@ -8,6 +8,9 @@ public class Main
 		if (a == b)
 			return true;
 
+		if (matrix.get(a).get(b) == 1)
+			return true;
+
 		for (int i = 0; i < matrix.size(); ++i)
 		{
 			if (matrix.get(a).get(i) == 1)
