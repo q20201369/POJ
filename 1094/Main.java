@@ -163,12 +163,3 @@ public class Main
 		}
 	}
 }
-
-class Vertex
-{
-	public int id;
-	public int posX;
-	public int posY;
-	public Vector<Integer> neighbor = new Vector<Integer>();
-}
-
