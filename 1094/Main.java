@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.Collections;
 
 public class Main
 {
@@ -177,9 +178,30 @@ public class Main
 					}
 				}
 
-				Vector<Integer> longestPath = findLongestPath(matrix);
-				if (longestPath.size() >= numberOfObjects)
+				Vector<Integer> sizes = new Vector<Integer>();
+				for (int r = 0; r < matrix.size(); ++r)
 				{
+					int count = 0;
+					Vector<Integer> row = matrix.get(r);
+					for (int c = 0; c < row.size(); ++c)
+					{
+						if (row.get(c) == 1)
+							count++;
+					}
+
+					sizes.add(count);
+				}
+				Collections.sort(sizes);
+				boolean isIncremental = true;
+				for (int r = 0; r < sizes.size(); ++r)
+				{
+					if (sizes.get(r) != r)
+						isIncremental = false;
+				}
+
+				if (isIncremental)
+				{
+					Vector<Integer> longestPath = findLongestPath(matrix);
 					System.out.print("Sorted sequence determined after " + (i+1) + " relations: ");
 					for (int j = 0; j < longestPath.size(); ++j)
 					{
