@@ -88,6 +88,32 @@ public class Main
 		return path;
 	}
 
+	private static Vector<Integer> findPrecedents(Vector<Vector<Integer>> matrix, int vertex)
+	{
+		Vector<Integer> precedents = new Vector<Integer>();
+
+		for (int i = 0; i < matrix.size(); ++i)
+		{
+			if (matrix.get(i).get(vertex) == 1)
+				precedents.add(i);
+		}
+
+		return precedents;
+	}
+
+	private static Vector<Integer> findSubsequents(Vector<Vector<Integer>> matrix, int vertex)
+	{
+		Vector<Integer> subsequents = new Vector<Integer>();
+
+		for (int i = 0; i < matrix.size(); ++i)
+		{
+			if (matrix.get(vertex).get(i) == 1)
+				subsequents.add(i);
+		}
+
+		return subsequents;
+	}
+
 	public static void main(String[] args)
 	{
 		Scanner sc = new Scanner(System.in);
@@ -137,6 +163,18 @@ public class Main
 				{
 					// if not, create an edge between smaller node and larger node
 					matrix.get(smaller).set(larger, 1);
+					// create edges between precedents and subsequents
+					Vector<Integer> precedents = findPrecedents(matrix, smaller);
+					Vector<Integer> subsequents = findSubsequents(matrix, larger);
+					precedents.add(smaller);
+					subsequents.add(larger);
+					for (int p = 0; p < precedents.size(); ++p)
+					{
+						for (int s = 0; s < subsequents.size(); ++s)
+						{
+							matrix.get(precedents.get(p)).set(subsequents.get(s), 1);
+						}
+					}
 				}
 
 				Vector<Integer> longestPath = findLongestPath(matrix);
