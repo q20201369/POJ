@@ -176,47 +176,46 @@ public class Main
 							matrix.get(precedents.get(p)).set(subsequents.get(s), 1);
 						}
 					}
-				}
 
-				Vector<Integer> sizes = new Vector<Integer>();
-				for (int r = 0; r < matrix.size(); ++r)
-				{
-					int count = 0;
-					Vector<Integer> row = matrix.get(r);
-					for (int c = 0; c < row.size(); ++c)
+					Vector<Integer> sizes = new Vector<Integer>();
+					for (int r = 0; r < matrix.size(); ++r)
 					{
-						if (row.get(c) == 1)
-							count++;
+						int count = 0;
+						Vector<Integer> row = matrix.get(r);
+						for (int c = 0; c < row.size(); ++c)
+						{
+							if (row.get(c) == 1)
+								count++;
+						}
+
+						sizes.add(count);
+					}
+					Collections.sort(sizes);
+					boolean isIncremental = true;
+					for (int r = 0; r < sizes.size(); ++r)
+					{
+						if (sizes.get(r) != r)
+							isIncremental = false;
 					}
 
-					sizes.add(count);
-				}
-				Collections.sort(sizes);
-				boolean isIncremental = true;
-				for (int r = 0; r < sizes.size(); ++r)
-				{
-					if (sizes.get(r) != r)
-						isIncremental = false;
-				}
-
-				if (isIncremental)
-				{
-					Vector<Integer> longestPath = findLongestPath(matrix);
-					System.out.print("Sorted sequence determined after " + (i+1) + " relations: ");
-					for (int j = 0; j < longestPath.size(); ++j)
+					if (isIncremental)
 					{
-						System.out.print("" + (char)('A' + longestPath.get(j)));
+						Vector<Integer> longestPath = findLongestPath(matrix);
+						System.out.print("Sorted sequence determined after " + (i+1) + " relations: ");
+						for (int j = 0; j < longestPath.size(); ++j)
+						{
+							System.out.print("" + (char)('A' + longestPath.get(j)));
+						}
+						System.out.println(".");
+
+						for (int j = 0; j < numberOfRelations-i-1; ++j)
+							sc.next("[A-Z][><][A-Z]");
+
+						isSequenceDetermined = true;
+						break;
+
 					}
-					System.out.println(".");
-
-					for (int j = 0; j < numberOfRelations-i-1; ++j)
-						sc.next("[A-Z][><][A-Z]");
-
-					isSequenceDetermined = true;
-					break;
-
 				}
-
 			}
 
 			if (isInconsistent || isSequenceDetermined)
