@@ -42,6 +42,7 @@ public class Main
 				matrix.add(x);
 			}
 
+			boolean isInconsistent = false;
 			for (int i = 0; i < numberOfRelations; ++i)
 			{
 				String relation = sc.next("[A-Z][><][A-Z]");
@@ -55,6 +56,7 @@ public class Main
 				if (existsPath(matrix, larger, smaller))
 				{
 					System.out.println("Inconsistency found after " + (i+1) + " relations.");
+					isInconsistent = true;
 					break;
 				}
 
@@ -66,6 +68,9 @@ public class Main
 				}
 
 			}
+
+			if (isInconsistent)
+				continue;
 
 			// find longest path
 			int smallest = 0;
