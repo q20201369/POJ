@@ -20,6 +20,71 @@ public class Main
 		return false;
 	}
 
+
+	private static Vector<Integer> findRoots(Vector<Vector<Integer>> matrix)
+	{
+		// find all the roots in the forest
+		Vector<Boolean> roots = new Vector<Boolean>();
+		for (int i = 0; i < matrix.size(); ++i)
+		{
+			roots.add(true);
+		}
+
+		for (int j = 0; j < matrix.size(); ++j)
+		{
+			for (int i = 0; i < matrix.size(); ++i)
+			{
+				if (matrix.get(i).get(j) == 1)
+				{
+					// any vertex is the end of an edge is not a root
+					roots.set(j, false);
+				}
+			}
+		}
+
+		int rootsCount = 0;
+		Vector<Integer> rootsList = new Vector<Integer>();
+		for (int i = 0; i < matrix.size(); ++i)
+		{
+			if (roots.get(i) == true)
+			{
+				rootsList.add(i);
+				rootsCount++;
+			}
+		}
+
+		return rootsList;
+	}
+
+	private static Vector<Integer> findLongestPathStartFromVertex(Vector<Vector<Integer>> matrix, int root)
+	{
+		Vector<Integer> longestPath = new Vector<Integer>();
+		for (int i = 0; i < matrix.size(); ++i)
+		{
+			if (matrix.get(root).get(i) == 1)
+			{
+				Vector<Integer> subPath = findLongestPathStartFromVertex(matrix, i);
+				if (subPath.size() > longestPath.size())
+					longestPath = subPath;
+			}
+		}
+
+		longestPath.add(0, root);
+		return longestPath;
+	}
+
+	private static Vector<Integer> findLongestPath(Vector<Vector<Integer>> matrix)
+	{
+		Vector<Integer> roots = findRoots(matrix);
+		if (roots.size() > 1)
+			return new Vector<Integer>();
+
+		int root = roots.get(0);
+
+		Vector<Integer> path = findLongestPathStartFromVertex(matrix, root);
+		return path;
+	}
+
 	public static void main(String[] args)
 	{
 		Scanner sc = new Scanner(System.in);
@@ -43,6 +108,8 @@ public class Main
 			}
 
 			boolean isInconsistent = false;
+			boolean isSequenceDetermined = false;
+
 			for (int i = 0; i < numberOfRelations; ++i)
 			{
 				String relation = sc.next("[A-Z][><][A-Z]");
@@ -57,6 +124,8 @@ public class Main
 				{
 					System.out.println("Inconsistency found after " + (i+1) + " relations.");
 					isInconsistent = true;
+					for (int j = 0; j < numberOfRelations-i-1; ++j)
+						sc.next("[A-Z][><][A-Z]");
 					break;
 				}
 
@@ -67,42 +136,30 @@ public class Main
 					matrix.get(smaller).set(larger, 1);
 				}
 
-			}
-
-			if (isInconsistent)
-				continue;
-
-			// find all the roots in the forest
-			Vector<Boolean> roots = new Vector<Boolean>();
-			for (int i = 0; i < matrix.size(); ++i)
-			{
-				roots.add(true);
-			}
-
-			for (int j = 0; j < matrix.size(); ++j)
-			{
-				for (int i = 0; i < matrix.size(); ++i)
+				Vector<Integer> longestPath = findLongestPath(matrix);
+				if (longestPath.size() >= numberOfObjects)
 				{
-					if (matrix.get(i).get(j) == 1)
+					System.out.print("Sorted sequence determined after " + (i+1) + " relations: ");
+					for (int j = 0; j < longestPath.size(); ++j)
 					{
-						// any vertex is the end of an edge is not a root
-						roots.set(j, false);
+						System.out.print("" + (char)('A' + longestPath.get(j)));
 					}
+					System.out.println(".");
+
+					for (int j = 0; j < numberOfRelations-i-1; ++j)
+						sc.next("[A-Z][><][A-Z]");
+
+					isSequenceDetermined = true;
+					break;
+
 				}
+
 			}
 
-			int rootsCount = 0;
-			for (int i = 0; i < matrix.size(); ++i)
-			{
-				if (roots.get(i) == true)
-					rootsCount++;
-			}
-
-			if (rootsCount > 1)
-			{
-				System.out.println("Sorted sequence cannot be determined.");
+			if (isInconsistent || isSequenceDetermined)
 				continue;
-			}
+
+			System.out.println("Sorted sequence cannot be determined.");
 		}
 	}
 }
