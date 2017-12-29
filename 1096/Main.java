@@ -61,17 +61,20 @@ public class Main
 			exploreGrid(extendedGrid, 0, 0, 0, n+1, m+1, k+1);
 
 			int faces = 0;
-			for (int iK = 1; iK < k+1; iK++)
+			if (System.getProperty("verbose") != null)
 			{
-				for (int iM = 1; iM < m+1; iM++)
+				for (int iK = 1; iK < k+1; iK++)
 				{
-					for (int iN = 1; iN < n+1; iN++)
+					for (int iM = 1; iM < m+1; iM++)
 					{
-						System.out.print(extendedGrid[iK][iM][iN]);
+						for (int iN = 1; iN < n+1; iN++)
+						{
+							System.out.print(extendedGrid[iK][iM][iN]);
+						}
+						System.out.println("");
 					}
-					System.out.println("");
+					System.out.println("----");
 				}
-				System.out.println("----");
 			}
 
 			for (int i = 0; i < points.size() / 3; ++i)
