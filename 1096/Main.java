@@ -1,28 +1,53 @@
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.Collections;
+import java.util.LinkedList;
 
 public class Main
 {
 	private static void exploreGrid(int[][][] grid, int x, int y, int z, int xUpperBound, int yUpperBound, int zUpperBound)
 	{
-		if (x < 0 || y < 0 || z < 0)
-			return;
+		LinkedList<Integer> queue = new LinkedList<Integer>();
+		queue.add(x);
+		queue.add(y);
+		queue.add(z);
 
-		if (x > xUpperBound || y > yUpperBound || z > zUpperBound)
-			return;
+		while (queue.size() > 0)
+		{
+			x = queue.removeFirst();
+			y = queue.removeFirst();
+			z = queue.removeFirst();
 
-		if (grid[z][y][x] != 0)
-			return;
+			if (x < 0 || y < 0 || z < 0)
+				continue;
 
-		grid[z][y][x] = 1;
+			if (x > xUpperBound || y > yUpperBound || z > zUpperBound)
+				continue;
 
-		exploreGrid(grid, x+1, y, z, xUpperBound, yUpperBound, zUpperBound);
-		exploreGrid(grid, x-1, y, z, xUpperBound, yUpperBound, zUpperBound);
-		exploreGrid(grid, x, y+1, z, xUpperBound, yUpperBound, zUpperBound);
-		exploreGrid(grid, x, y-1, z, xUpperBound, yUpperBound, zUpperBound);
-		exploreGrid(grid, x, y, z+1, xUpperBound, yUpperBound, zUpperBound);
-		exploreGrid(grid, x, y, z-1, xUpperBound, yUpperBound, zUpperBound);
+			if (grid[z][y][x] != 0)
+				continue;
+
+			grid[z][y][x] = 1;
+
+			queue.add(x+1);
+			queue.add(y);
+			queue.add(z);
+			queue.add(x-1);
+			queue.add(y);
+			queue.add(z);
+			queue.add(x);
+			queue.add(y+1);
+			queue.add(z);
+			queue.add(x);
+			queue.add(y-1);
+			queue.add(z);
+			queue.add(x);
+			queue.add(y);
+			queue.add(z+1);
+			queue.add(x);
+			queue.add(y);
+			queue.add(z-1);
+		}
 	}
 
 	public static void main(String[] args)
