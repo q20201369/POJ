@@ -31,17 +31,18 @@ public class Main
 		haabMonthNameToIndex.put("pax",15);
 		haabMonthNameToIndex.put("koyab",16);
 		haabMonthNameToIndex.put("cumhu",17);
+		haabMonthNameToIndex.put("uayet",18);
 
 		String[] tzolkinDayNames = new String[]
 		{
-			"imix", "ik", "akbal", "kan", "chicchan", "cimi", "manik", "lamat", "muluk", "ok", "chuen", "eb", "ben", "ix", "mem", "cib", "caban", "eznab", "canac", "ahau"
+			"imix", "ik", "akbal", "kan", "chicchan", "cimi", "manik", "lamat", "muluk", "ok", "chuen", "eb", "ben", "ix", "mem", "cib", "caban", "eznab", "canac", "ahau", "uayet"
 		};
 
 		for (int i = 0; i < inputs; ++i)
 		{
 			double haabDayDouble = sc.nextDouble();
 			int haabDay = (int)Math.round(haabDayDouble);
-			String haabMonthName = sc.next();
+			String haabMonthName = sc.next("[a-z]*");
 			int haabYear = sc.nextInt();
 
 			int haabMonth = haabMonthNameToIndex.get(haabMonthName);
