@@ -37,24 +37,17 @@ public class Main
 			adapters.add(new Pair(adapterReceptacleType, adapterPlugType));
 		}
 
-		for (int i = 0; i < devices.size(); ++i)
+		for (int depth = 0; depth <= adapters.size(); depth++)
 		{
-			Pair device = devices.get(i);
-			if (device.isUsed)
-				continue;
-
-			for (int j = 0; j < receptacles.size(); ++j)
+			for (int i = 0; i < devices.size(); ++i)
 			{
-				Receptacle receptacle = receptacles.get(j);
-				if (receptacle.isUsed)
+				Pair device = devices.get(i);
+				if (device.isUsed)
 					continue;
 
-				if (device.value.equals(receptacle.type))
-				{
-					device.isUsed = true;
-					receptacle.isUsed = true;
-					break;
-				}
+				Vector<Pair> adapterSequence = new Vector<Pair>();
+
+				findTraverseWithDepth(device, device.value, depth, adapterSequence, 0, receptacles, adapters);
 			}
 		}
 
@@ -66,6 +59,72 @@ public class Main
 		}
 
 		System.out.println(remainingDevices);
+	}
+
+	private static void findTraverseWithDepth(Pair device, String plugType, int expectedDepth, Vector<Pair> adapterSequence, int currentDepth, Vector<Receptacle> receptacles, Vector<Pair> adapters)
+	{
+		Pair lastAdapter = null;
+		if (adapterSequence.size() != 0)
+		{
+			lastAdapter = adapterSequence.get(adapterSequence.size() - 1);
+		}
+
+		if (lastAdapter != null && !plugType.equals(lastAdapter.key))
+		{
+			return;
+		}
+
+		if (currentDepth == expectedDepth)
+		{
+			currentDepth = currentDepth;
+			for (int i = 0; i < receptacles.size(); ++i)
+			{
+				Receptacle receptacle = receptacles.get(i);
+				if (receptacle.type.equals(plugType))
+				{
+					device.isUsed = true;
+					receptacle.isUsed = true;
+					for (int j = 0; j < adapterSequence.size(); ++j)
+					{
+						adapterSequence.get(i).isUsed = true;
+					}
+
+					return;
+				}
+			}
+			return;
+		}
+
+		Vector<Pair> nextAdapters = new Vector<Pair>();
+		for (int i = 0; i < adapters.size(); ++i)
+		{
+			if (adapters.get(i).isUsed)
+				continue;
+
+			// if used in current adapterSequence, continue
+			boolean isUsedInAdapterSequence = false;
+			for (int j = 0; j < adapterSequence.size(); ++j)
+			{
+				if (adapters.get(i) == adapterSequence.get(j))
+				{
+					isUsedInAdapterSequence = true;
+					break;
+				}
+			}
+
+			if (isUsedInAdapterSequence)
+				continue;
+
+			if (adapters.get(i).key.equals(plugType))
+				nextAdapters.add(adapters.get(i));
+		}
+
+		for (int i = 0; i < nextAdapters.size(); ++i)
+		{
+			adapterSequence.add(nextAdapters.get(i));
+			findTraverseWithDepth(device, nextAdapters.get(i).value, expectedDepth, adapterSequence, currentDepth+1, receptacles, adapters);
+			adapterSequence.remove(adapterSequence.size() - 1);
+		}
 	}
 }
 
