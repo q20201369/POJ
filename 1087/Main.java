@@ -69,6 +69,9 @@ public class Main
 			lastAdapter = adapterSequence.get(adapterSequence.size() - 1);
 		}
 
+		if (device.isUsed)
+			return;
+
 		if (currentDepth == expectedDepth)
 		{
 			currentDepth = currentDepth;
