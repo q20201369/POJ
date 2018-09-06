@@ -37,6 +37,7 @@ public class Main
 			adapters.add(new Pair(adapterReceptacleType, adapterPlugType));
 		}
 
+		/*
 		for (int depth = 0; depth <= adapters.size(); depth++)
 		{
 			for (int i = 0; i < devices.size(); ++i)
@@ -57,8 +58,98 @@ public class Main
 			if (devices.get(i).isUsed == false)
 				remainingDevices++;
 		}
+		*/
+
+		int maxPluggedDevices = findMaxPluggedDevices(devices, 0, receptacles, adapters);
+
+		int remainingDevices = devices.size() - maxPluggedDevices;
 
 		System.out.println(remainingDevices);
+	}
+
+	private static int findMaxPluggedDevices(Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters)
+	{
+		if (deviceIndex >= devices.size())
+			return 0;
+
+		Pair device = devices.get(deviceIndex);
+		String deviceType = device.value;
+		int maxPluggedDevices = 0;
+
+		// if device is plugged in into receptacle
+		for (int i = 0; i < receptacles.size(); ++i)
+		{
+			Receptacle receptacle = receptacles.get(i);
+			if (receptacle.isUsed)
+				continue;
+
+			if (!receptacle.type.equals(deviceType))
+				continue;
+
+			device.isUsed = true;
+			receptacle.isUsed = true;
+			int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters) + 1;
+			if (maxPluggedDevices < pluggedDevices)
+				maxPluggedDevices = pluggedDevices;
+
+			device.isUsed = false;
+			receptacle.isUsed = false;
+		}
+
+		// if device is plugged in into adapters and finally into one receptacle
+		int pluggedDevices = findMaxPluggedDevicesByAdapters(deviceType, devices, deviceIndex, receptacles, adapters);
+		if (maxPluggedDevices < pluggedDevices)
+			maxPluggedDevices = pluggedDevices;
+
+		// if device is not plugged in at all
+		pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters);
+		if (maxPluggedDevices < pluggedDevices)
+			maxPluggedDevices = pluggedDevices;
+
+		return maxPluggedDevices;
+	}
+
+	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters)
+	{
+		int maxPluggedDevices = 0;
+		Pair device = devices.get(deviceIndex);
+
+		for (int i = 0; i < receptacles.size(); ++i)
+		{
+			Receptacle receptacle = receptacles.get(i);
+			if (receptacle.isUsed)
+				continue;
+
+			if (!pluginType.equals(receptacle.type))
+				continue;
+
+			receptacle.isUsed = true;
+			device.isUsed = true;
+			int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters) + 1;
+			if (pluggedDevices > maxPluggedDevices)
+				maxPluggedDevices = pluggedDevices;
+
+			receptacle.isUsed = false;
+			device.isUsed = false;
+		}
+
+		for (int i = 0; i < adapters.size(); ++i)
+		{
+			Pair adapter = adapters.get(i);
+			if (adapter.isUsed)
+				continue;
+
+			if (adapter.key.equals(pluginType))
+			{
+				adapter.isUsed = true;
+				int pluggedDevices = findMaxPluggedDevicesByAdapters(adapter.value, devices, deviceIndex, receptacles, adapters);
+				if (pluggedDevices > maxPluggedDevices)
+					maxPluggedDevices = pluggedDevices;
+				adapter.isUsed = false;
+			}
+		}
+
+		return maxPluggedDevices;
 	}
 
 	private static void findTraverseWithDepth(Pair device, String plugType, int expectedDepth, Vector<Pair> adapterSequence, int currentDepth, Vector<Receptacle> receptacles, Vector<Pair> adapters)
