@@ -3,6 +3,8 @@ import java.util.Vector;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Hashtable;
+import java.util.Set;
+import java.util.Enumeration;
 
 public class Main
 {
@@ -37,18 +39,39 @@ public class Main
 			adapters.add(new Pair(adapterReceptacleType, adapterPlugType));
 		}
 
-		Hashtable<String, Vector<Pair>> adaptersMap = new Hashtable<String, Vector<Pair>>();
+		Hashtable<String, Hashtable<String, Boolean>> adaptersMap = new Hashtable<String, Hashtable<String, Boolean>>();
 		for (int i = 0; i < adapters.size(); ++i)
 		{
 			Pair adapter = adapters.get(i);
 
 			if (!adaptersMap.containsKey(adapter.key))
 			{
-				adaptersMap.put(adapter.key, new Vector<Pair>());
+				adaptersMap.put(adapter.key, new Hashtable<String, Boolean>());
 			}
 
-			Vector<Pair> list = adaptersMap.get(adapter.key);
-			list.add(adapter);
+			Hashtable<String, Boolean> map = adaptersMap.get(adapter.key);
+			map.put(adapter.value, true);
+		}
+
+
+		for (int k = 0; k < adapters.size(); ++k)
+		{
+			for (int i = 0; i < adapters.size(); ++i)
+			{
+				for (int j = 0; j < adapters.size(); ++j)
+				{
+					if (adapters.get(i).value.equals(adapters.get(j).key))
+					{
+						if (!adaptersMap.containsKey(adapters.get(i).key))
+						{
+							adaptersMap.put(adapters.get(i).key, new Hashtable<String, Boolean>());
+						}
+
+						Hashtable<String, Boolean> map = adaptersMap.get(adapters.get(i).key);
+						map.put(adapters.get(j).value, true);
+					}
+				}
+			}
 		}
 
 		/*
@@ -81,7 +104,7 @@ public class Main
 		System.out.println(remainingDevices);
 	}
 
-	private static int findMaxPluggedDevices(Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Vector<Pair>> adaptersMap)
+	private static int findMaxPluggedDevices(Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Hashtable<String, Boolean>> adaptersMap)
 	{
 		if (deviceIndex >= devices.size())
 			return 0;
@@ -123,10 +146,22 @@ public class Main
 		return maxPluggedDevices;
 	}
 
-	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Vector<Pair>> adaptersMap)
+	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Hashtable<String, Boolean>> adaptersMap)
 	{
 		int maxPluggedDevices = 0;
 		Pair device = devices.get(deviceIndex);
+
+		Vector<String> nextTypes = new Vector<String>();
+		if (adaptersMap.get(pluginType) != null)
+		{
+			Enumeration<String> matchedAdapters = adaptersMap.get(pluginType).keys();
+			while (matchedAdapters.hasMoreElements())
+			{
+				String nextType = matchedAdapters.nextElement();
+
+				nextTypes.add(nextType);
+			}
+		}
 
 		for (int i = 0; i < receptacles.size(); ++i)
 		{
@@ -134,7 +169,17 @@ public class Main
 			if (receptacle.isUsed)
 				continue;
 
-			if (!pluginType.equals(receptacle.type))
+			boolean matchesReceptacle = false;
+			for (int j = 0; j < nextTypes.size(); ++j)
+			{
+				if (nextTypes.get(j).equals(receptacle.type))
+				{
+					matchesReceptacle = true;
+					break;
+				}
+			}
+
+			if (matchesReceptacle == false && !pluginType.equals(receptacle.type))
 				continue;
 
 			receptacle.isUsed = true;
@@ -145,19 +190,6 @@ public class Main
 
 			receptacle.isUsed = false;
 			device.isUsed = false;
-		}
-
-		Vector<Pair> matchedAdapters = adaptersMap.get(pluginType);
-		for (int i = 0; matchedAdapters != null && i < matchedAdapters.size(); ++i)
-		{
-			Pair adapter = matchedAdapters.get(i);
-
-			if (adapter.key.equals(pluginType))
-			{
-				int pluggedDevices = findMaxPluggedDevicesByAdapters(adapter.value, devices, deviceIndex, receptacles, adapters, adaptersMap);
-				if (pluggedDevices > maxPluggedDevices)
-					maxPluggedDevices = pluggedDevices;
-			}
 		}
 
 		return maxPluggedDevices;
