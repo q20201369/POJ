@@ -151,16 +151,12 @@ public class Main
 		for (int i = 0; matchedAdapters != null && i < matchedAdapters.size(); ++i)
 		{
 			Pair adapter = matchedAdapters.get(i);
-			if (adapter.isUsed)
-				continue;
 
 			if (adapter.key.equals(pluginType))
 			{
-				adapter.isUsed = true;
 				int pluggedDevices = findMaxPluggedDevicesByAdapters(adapter.value, devices, deviceIndex, receptacles, adapters, adaptersMap);
 				if (pluggedDevices > maxPluggedDevices)
 					maxPluggedDevices = pluggedDevices;
-				adapter.isUsed = false;
 			}
 		}
 
