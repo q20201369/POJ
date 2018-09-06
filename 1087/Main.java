@@ -37,6 +37,20 @@ public class Main
 			adapters.add(new Pair(adapterReceptacleType, adapterPlugType));
 		}
 
+		Hashtable<String, Vector<Pair>> adaptersMap = new Hashtable<String, Vector<Pair>>();
+		for (int i = 0; i < adapters.size(); ++i)
+		{
+			Pair adapter = adapters.get(i);
+
+			if (!adaptersMap.containsKey(adapter.key))
+			{
+				adaptersMap.put(adapter.key, new Vector<Pair>());
+			}
+
+			Vector<Pair> list = adaptersMap.get(adapter.key);
+			list.add(adapter);
+		}
+
 		/*
 		for (int depth = 0; depth <= adapters.size(); depth++)
 		{
@@ -60,14 +74,14 @@ public class Main
 		}
 		*/
 
-		int maxPluggedDevices = findMaxPluggedDevices(devices, 0, receptacles, adapters);
+		int maxPluggedDevices = findMaxPluggedDevices(devices, 0, receptacles, adapters, adaptersMap);
 
 		int remainingDevices = devices.size() - maxPluggedDevices;
 
 		System.out.println(remainingDevices);
 	}
 
-	private static int findMaxPluggedDevices(Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters)
+	private static int findMaxPluggedDevices(Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Vector<Pair>> adaptersMap)
 	{
 		if (deviceIndex >= devices.size())
 			return 0;
@@ -88,7 +102,7 @@ public class Main
 
 			device.isUsed = true;
 			receptacle.isUsed = true;
-			int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters) + 1;
+			int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters, adaptersMap) + 1;
 			if (maxPluggedDevices < pluggedDevices)
 				maxPluggedDevices = pluggedDevices;
 
@@ -97,19 +111,19 @@ public class Main
 		}
 
 		// if device is plugged in into adapters and finally into one receptacle
-		int pluggedDevices = findMaxPluggedDevicesByAdapters(deviceType, devices, deviceIndex, receptacles, adapters);
+		int pluggedDevices = findMaxPluggedDevicesByAdapters(deviceType, devices, deviceIndex, receptacles, adapters, adaptersMap);
 		if (maxPluggedDevices < pluggedDevices)
 			maxPluggedDevices = pluggedDevices;
 
 		// if device is not plugged in at all
-		pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters);
+		pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters, adaptersMap);
 		if (maxPluggedDevices < pluggedDevices)
 			maxPluggedDevices = pluggedDevices;
 
 		return maxPluggedDevices;
 	}
 
-	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters)
+	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Vector<Pair>> adaptersMap)
 	{
 		int maxPluggedDevices = 0;
 		Pair device = devices.get(deviceIndex);
@@ -125,7 +139,7 @@ public class Main
 
 			receptacle.isUsed = true;
 			device.isUsed = true;
-			int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters) + 1;
+			int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters, adaptersMap) + 1;
 			if (pluggedDevices > maxPluggedDevices)
 				maxPluggedDevices = pluggedDevices;
 
@@ -133,16 +147,17 @@ public class Main
 			device.isUsed = false;
 		}
 
-		for (int i = 0; i < adapters.size(); ++i)
+		Vector<Pair> matchedAdapters = adaptersMap.get(pluginType);
+		for (int i = 0; matchedAdapters != null && i < matchedAdapters.size(); ++i)
 		{
-			Pair adapter = adapters.get(i);
+			Pair adapter = matchedAdapters.get(i);
 			if (adapter.isUsed)
 				continue;
 
 			if (adapter.key.equals(pluginType))
 			{
 				adapter.isUsed = true;
-				int pluggedDevices = findMaxPluggedDevicesByAdapters(adapter.value, devices, deviceIndex, receptacles, adapters);
+				int pluggedDevices = findMaxPluggedDevicesByAdapters(adapter.value, devices, deviceIndex, receptacles, adapters, adaptersMap);
 				if (pluggedDevices > maxPluggedDevices)
 					maxPluggedDevices = pluggedDevices;
 				adapter.isUsed = false;
