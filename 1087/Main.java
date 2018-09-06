@@ -111,7 +111,20 @@ public class Main
 
 		Pair device = devices.get(deviceIndex);
 		String deviceType = device.value;
+		String pluginType = deviceType;
 		int maxPluggedDevices = 0;
+
+		Vector<String> nextTypes = new Vector<String>();
+		if (adaptersMap.get(pluginType) != null)
+		{
+			Enumeration<String> matchedAdapters = adaptersMap.get(deviceType).keys();
+			while (matchedAdapters.hasMoreElements())
+			{
+				String nextType = matchedAdapters.nextElement();
+
+				nextTypes.add(nextType);
+			}
+		}
 
 		// if device is plugged in into receptacle
 		for (int i = 0; i < receptacles.size(); ++i)
@@ -134,35 +147,6 @@ public class Main
 		}
 
 		// if device is plugged in into adapters and finally into one receptacle
-		int pluggedDevices = findMaxPluggedDevicesByAdapters(deviceType, devices, deviceIndex, receptacles, adapters, adaptersMap);
-		if (maxPluggedDevices < pluggedDevices)
-			maxPluggedDevices = pluggedDevices;
-
-		// if device is not plugged in at all
-		pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters, adaptersMap);
-		if (maxPluggedDevices < pluggedDevices)
-			maxPluggedDevices = pluggedDevices;
-
-		return maxPluggedDevices;
-	}
-
-	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Hashtable<String, Boolean>> adaptersMap)
-	{
-		int maxPluggedDevices = 0;
-		Pair device = devices.get(deviceIndex);
-
-		Vector<String> nextTypes = new Vector<String>();
-		if (adaptersMap.get(pluginType) != null)
-		{
-			Enumeration<String> matchedAdapters = adaptersMap.get(pluginType).keys();
-			while (matchedAdapters.hasMoreElements())
-			{
-				String nextType = matchedAdapters.nextElement();
-
-				nextTypes.add(nextType);
-			}
-		}
-
 		for (int i = 0; i < receptacles.size(); ++i)
 		{
 			Receptacle receptacle = receptacles.get(i);
@@ -179,7 +163,7 @@ public class Main
 				}
 			}
 
-			if (matchesReceptacle == false && !pluginType.equals(receptacle.type))
+			if (matchesReceptacle == false)
 				continue;
 
 			receptacle.isUsed = true;
@@ -191,6 +175,21 @@ public class Main
 			receptacle.isUsed = false;
 			device.isUsed = false;
 		}
+
+		// if device is not plugged in at all
+		int pluggedDevices = findMaxPluggedDevices(devices, deviceIndex + 1, receptacles, adapters, adaptersMap);
+		if (maxPluggedDevices < pluggedDevices)
+			maxPluggedDevices = pluggedDevices;
+
+		return maxPluggedDevices;
+	}
+
+	private static int findMaxPluggedDevicesByAdapters(String pluginType, Vector<Pair> devices, int deviceIndex, Vector<Receptacle> receptacles, Vector<Pair> adapters, Hashtable<String, Hashtable<String, Boolean>> adaptersMap)
+	{
+		int maxPluggedDevices = 0;
+		Pair device = devices.get(deviceIndex);
+
+
 
 		return maxPluggedDevices;
 	}
