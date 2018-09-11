@@ -2,18 +2,19 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.math.BigInteger;
 
 public class Main
 {
-	public static int findMinimumMovesSetLastToOne(Vector<Integer> numbers, int vectorUpperBound)
+	public static BigInteger findMinimumMovesSetLastToOne(Vector<Integer> numbers, int vectorUpperBound)
 	{
 		if (vectorUpperBound < 0)
 		{
-			return 0;
+			return BigInteger.ZERO;
 		}
 		else if (vectorUpperBound == 0)
 		{
-			return numbers.get(0) == 0 ? 1 : 0;
+			return numbers.get(0) == 0 ? BigInteger.ONE : BigInteger.ZERO;
 		}
 		else
 		{
@@ -25,25 +26,25 @@ public class Main
 			{
 				if (numbers.get(vectorUpperBound-1) == 1)
 				{
-					return findMinimumMoves(numbers, vectorUpperBound - 2) + 1 + ((1<<(vectorUpperBound))-1);
+					return findMinimumMoves(numbers, vectorUpperBound - 2).add(BigInteger.ONE).add(BigInteger.ONE.shiftLeft(vectorUpperBound)).subtract(BigInteger.ONE);
 				}
 				else
 				{
-					return findMinimumMovesSetLastToOne(numbers, vectorUpperBound-1) + 1 + ((1<<(vectorUpperBound))-1);
+					return findMinimumMovesSetLastToOne(numbers, vectorUpperBound-1).add(BigInteger.ONE).add(BigInteger.ONE.shiftLeft(vectorUpperBound)).subtract(BigInteger.ONE);
 				}
 			}
 		}
 	}
 
-	public static int findMinimumMoves(Vector<Integer> numbers, int vectorUpperBound)
+	public static BigInteger findMinimumMoves(Vector<Integer> numbers, int vectorUpperBound)
 	{
 		if (vectorUpperBound < 0)
 		{
-			return 0;
+			return BigInteger.ZERO;
 		}
 		else if (vectorUpperBound == 0)
 		{
-			return numbers.get(0);
+			return numbers.get(0) == 0 ? BigInteger.ZERO : BigInteger.ONE;
 		}
 		else
 		{
@@ -55,13 +56,13 @@ public class Main
 			{
 				if (numbers.get(vectorUpperBound-1) == 1)
 				{
-					int subResult = findMinimumMoves(numbers, vectorUpperBound-2);
-					int clearResult = ((1<<(vectorUpperBound)) - 1);
-					return  subResult + 1 + clearResult;
+					BigInteger subResult = findMinimumMoves(numbers, vectorUpperBound-2);
+					BigInteger clearResult = BigInteger.ONE.shiftLeft(vectorUpperBound).subtract(BigInteger.ONE);
+					return  subResult.add(BigInteger.ONE).add(clearResult);
 				}
 				else
 				{
-					return findMinimumMovesSetLastToOne(numbers, vectorUpperBound-1) + 1 + ((1<<vectorUpperBound) - 1);
+					return findMinimumMovesSetLastToOne(numbers, vectorUpperBound-1).add(BigInteger.ONE).add(BigInteger.ONE.shiftLeft(vectorUpperBound)).subtract(BigInteger.ONE);
 				}
 			}
 		}
