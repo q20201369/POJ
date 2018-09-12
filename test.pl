@@ -40,6 +40,8 @@ sub compare_two_files {
 	return $f1_content eq $f2_content;
 }
 
+my @failed;
+
 sub process_test {
 	my $test_index = shift;
 	my $i = shift;
@@ -72,9 +74,22 @@ sub process_test {
 	}
 	else {
 		print "X";
+		push(@failed, $test_index);
 	}
 
 	process_test($test_index+1, $i);
 }
 
 process_test(0, 1);
+print "\n";
+
+if (@failed > 0) {
+	print "Failed: ";
+	for (my $i = 0; $i < @failed; ++$i) {
+		print "$failed[$i] ";
+	}
+	print "\n";
+}
+else {
+	print "All passed!\n";
+}
