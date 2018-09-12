@@ -3,6 +3,7 @@ import java.util.Vector;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.Arrays;
 
 public class Main
 {
@@ -137,11 +138,7 @@ public class Main
 			for (int i = 0; i < squareHeight; ++i)
 			{
 				square[i] = new char[squareWidth];
-
-				for (int j = 0; j < squareWidth; ++j)
-				{
-					square[i][j] = ' ';
-				}
+				Arrays.fill(square[i], ' ');
 			}
 
 			for (int i = 0; i < m; ++i)
@@ -224,47 +221,6 @@ public class Main
 				System.out.print("*");
 			}
 			System.out.println("");
-
-				/*
-				if (i % 4 == 0)
-				{
-					for (int j = 0; j < squareWidth; ++j)
-					{
-						if (j % 4 == 0)
-							square[i][j] = 'H';
-						else if (j % 4 == 2)
-							square[i][j] = 'O';
-						else
-							square[i][j] = ' ';
-					}
-				}
-				else if (i % 4 == 1 || i % 4 == 3)
-				{
-					for (int j = 0; j < squareWidth; ++j)
-					{
-						square[i][j] = ' ';
-					}
-				}
-				else if (i % 4 == 2)
-				{
-					for (int j = 0; j < squareWidth; ++j)
-					{
-						if (j % 4 == 2)
-							square[i][j] = 'H';
-						else
-							square[i][j] = ' ';
-					}
-				}
-				*/
-
-			for (int i = 0; i < m; ++i)
-			{
-				for (int j = 0; j < m; ++j)
-				{
-					// print O line
-					// print H line
-				}
-			}
 		}
 	}
 }
