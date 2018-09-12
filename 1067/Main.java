@@ -6,9 +6,13 @@ import java.util.HashMap;
 
 public class Main
 {
-	public static void judge(int smallStones, int largeStones)
+	public static long patternSizes[][] = new long[11][2];
+	public static long patternDeltas[][] = new long[patternSizes.length][2];
+	public static int patternA[] = {1, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2};
+	public static int patternB[] = {1, 2, 1, 2, 2, 1, 2, 2};
+
+	public static void initializePatterns()
 	{
-		long patternSizes[][] = new long[11][2];
 		patternSizes[0] = new long[] {21, 13};
 		{
 			long a = patternSizes[0][0]; long b = patternSizes[0][1];
@@ -23,7 +27,6 @@ public class Main
 			}
 		}
 
-		long patternDeltas[][] = new long[patternSizes.length][2];
 		patternDeltas[0] = new long[] {13, 8};
 		{
 			long a = patternDeltas[0][0]; long b = patternDeltas[0][1];
@@ -38,25 +41,10 @@ public class Main
 			}
 		}
 
-		/*
-		long patternDeltas[][] = {
-			{13, 8,},
-			{89, 55},
-			{610, 377},
-			{4181, 2584},
-			{28657, 17711},
-			{196418, 121393},
-			{1346269, 832040},
-			{9227465, 5702887},
-			{63245986, 39088169},
-			{433494437, 267914296},
-			{2971215073L, 1836311903L},
-		};
-		*/
+	}
 
-		int patternA[] = {1, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2};
-		int patternB[] = {1, 2, 1, 2, 2, 1, 2, 2};
-
+	public static void judge(int smallStones, int largeStones)
+	{
 		long number = smallStones;
 		long step = 0;
 		int patternType = 0;
@@ -238,6 +226,8 @@ public class Main
 
 	public static void main(String[] args)
 	{
+		initializePatterns();
+
 		Scanner sc = new Scanner(System.in);
 		while (sc.hasNextInt())
 		{
