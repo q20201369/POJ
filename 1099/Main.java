@@ -93,6 +93,10 @@ public class Main
 
 			caseNumber++;
 
+			// separate each case by blank line
+			if (caseNumber > 1)
+				System.out.println("");
+
 			int[][] matrix = new int[m][m];
 			for (int i = 0; i < m; ++i)
 			{
