@@ -93,10 +93,12 @@ public class Main
 
 			System.out.println(width);
 
+			/*
 			for (int i = 0; i < rowBuffer.size(); ++i)
 			{
 				System.out.println(rowBuffer.get(i).toString());
 			}
+			*/
 
 			// calculate edge
 			LinkedList<ImageRow> edgeRows = new LinkedList<ImageRow>();
@@ -141,9 +143,45 @@ public class Main
 				edgeRows.addLast(row);
 			}
 
+			/*
 			for (int i = 0; i < edgeRows.size(); ++i)
 			{
 				System.out.println(edgeRows.get(i).toString());
+			}
+			*/
+
+			Vector<RunLengthEncoding> edgeRLEImage = new Vector<RunLengthEncoding>();
+
+			int currentPixel = edgeRows.get(0).pixels[0];
+			int currentLength = 0;
+			for (int i = 0; i < edgeRows.size(); ++i)
+			{
+				for (int j = 0; j < width; ++j)
+				{
+					if (edgeRows.get(i).pixels[j] == currentPixel)
+					{
+						currentLength += edgeRows.get(i).count;
+					}
+					else
+					{
+						RunLengthEncoding rle = new RunLengthEncoding(currentPixel, currentLength);
+						edgeRLEImage.add(rle);
+
+						currentPixel = edgeRows.get(i).pixels[j];
+						currentLength = 1;
+					}
+				}
+			}
+
+			if (currentLength != 0)
+			{
+				RunLengthEncoding rle = new RunLengthEncoding(currentPixel, currentLength);
+				edgeRLEImage.add(rle);
+			}
+
+			for (int i = 0; i < edgeRLEImage.size(); ++i)
+			{
+				System.out.println(edgeRLEImage.get(i).pixel + " " + edgeRLEImage.get(i).length);
 			}
 
 			/*
