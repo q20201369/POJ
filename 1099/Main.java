@@ -24,18 +24,16 @@ public class Main
 			possibleStates[3] = false;
 		}
 
-		/*
 		if (column == 0)
-		{
-			possibleStates[1] = false;
-			possibleStates[2] = false;
-		}
-		else if (column == m - 1)
 		{
 			possibleStates[0] = false;
 			possibleStates[3] = false;
 		}
-		*/
+		else if (column == m - 1)
+		{
+			possibleStates[1] = false;
+			possibleStates[2] = false;
+		}
 
 		if (0 < column && (matrix[row][column-1] == 11 || matrix[row][column-1] == 14 || matrix[row][column-1] == 1))
 		{
@@ -54,11 +52,21 @@ public class Main
 			possibleStates[0] = false;
 			possibleStates[1] = false;
 		}
+		if (0 < row && (matrix[row-1][column] == 11 || matrix[row-1][column] == 12 || matrix[row-1][column] == 1))
+		{
+			possibleStates[2] = false;
+			possibleStates[3] = false;
+		}
 
 		if (row < m-1 && (matrix[row+1][column] == 11 || matrix[row+1][column] == 12 || matrix[row+1][column] == -1))
 		{
 			possibleStates[2] = false;
 			possibleStates[3] = false;
+		}
+		if (row < m-1 && (matrix[row+1][column] == 12 || matrix[row+1][column] == 13 || matrix[row+1][column] == 1))
+		{
+			possibleStates[0] = false;
+			possibleStates[1] = false;
 		}
 
 		int remainingPossibleStates = 0;
@@ -97,18 +105,39 @@ public class Main
 			if (caseNumber > 1)
 				System.out.println("");
 
+			LinkedList<Pair<Integer, Integer>> queue = new LinkedList<Pair<Integer, Integer>>();
+
 			int[][] matrix = new int[m][m];
 			for (int i = 0; i < m; ++i)
 			{
 				matrix[i] = new int[m];
+				Vector<Integer> nonZeroColumns = new Vector<Integer>();
 				for (int j = 0; j < m; ++j)
 				{
 					int d = sc.nextInt();
 					matrix[i][j] = d;
+					if (d != 0)
+						nonZeroColumns.add(j);
+				}
+
+				int firstNoneZeroColumn = nonZeroColumns.get(0);
+				if (firstNoneZeroColumn > 0)
+				{
+					for (int j = firstNoneZeroColumn - 1; j >= 0 ; --j)
+					{
+						queue.addLast(new Pair<Integer, Integer>(i, j));
+					}
+				}
+				if (firstNoneZeroColumn < m - 1)
+				{
+					for (int j = firstNoneZeroColumn + 1; j < m ; ++j)
+					{
+						queue.addLast(new Pair<Integer, Integer>(i, j));
+					}
 				}
 			}
 
-			LinkedList<Pair<Integer, Integer>> queue = new LinkedList<Pair<Integer, Integer>>();
+			/*
 			for (int i = 0; i < m; ++i)
 			{
 				for (int j = 0; j < m; ++j)
@@ -116,14 +145,21 @@ public class Main
 					queue.add(new Pair<Integer, Integer>(i, j));
 				}
 			}
+			*/
 
+			int count = 0;
 			while (queue.size() > 0)
 			{
+				count++;
 				Pair<Integer, Integer> oxygen = queue.removeFirst();
 				int state = getOxygenState(matrix, m, oxygen.key, oxygen.value);
 				if (state == 0)
+				{
+					// System.err.println("bad: " + oxygen.key + ", " + oxygen.value);
 					queue.addLast(oxygen);
+				}
 			}
+			// System.err.println("calc: " + count);
 
 			/*
 			for (int i = 0; i < m; ++i)
