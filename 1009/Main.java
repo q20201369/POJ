@@ -60,7 +60,7 @@ public class Main
 					}
 				}
 
-				if (data.length > width)
+				if (data.length >= width)
 				{
 					currentBlock.row.add(new RunLengthEncoding(data.pixel, width));
 					currentBlock.rowCount = data.length / width;
