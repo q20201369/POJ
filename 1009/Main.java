@@ -9,8 +9,13 @@ import java.util.HashSet;
 
 public class Main
 {
+	private static boolean isDebug = false;
+
 	public static void main(String[] args)
 	{
+		if (args.length > 0 && "-d".equals(args[0]))
+			isDebug = true;
+
 		Scanner sc = new Scanner(System.in);
 
 		while (true)
@@ -75,10 +80,13 @@ public class Main
 				}
 			}
 
-			System.out.println("--blocks---------");
-			for (int i = 0; i < blocks.size(); ++i)
+			if (isDebug)
 			{
-				System.out.println(blocks.get(i).toString());
+				System.out.println("--blocks---------");
+				for (int i = 0; i < blocks.size(); ++i)
+				{
+					System.out.println(blocks.get(i).toString());
+				}
 			}
 
 			// add fake blocks so that the calculation is simpler
@@ -131,10 +139,13 @@ public class Main
 				}
 			}
 
-			System.out.println("---edgeImage--------");
-			for (int i = 0; i < edgeImage.size(); ++i)
+			if (isDebug)
 			{
-				System.out.println(edgeImage.get(i).toString());
+				System.out.println("---edgeImage--------");
+				for (int i = 0; i < edgeImage.size(); ++i)
+				{
+					System.out.println(edgeImage.get(i).toString());
+				}
 			}
 
 			RunLengthEncoding lastRLE = edgeImage.getFirst();
@@ -481,6 +492,16 @@ public class Main
 
 	private static int findMaxDelta(Vector<Integer> pixels, int basePixel)
 	{
+		if (isDebug)
+		{
+			System.out.print("findMaxDelta: ");
+			for (int i = 0; i < pixels.size(); ++i)
+			{
+				System.out.print(pixels.get(i) + " ");
+			}
+			System.out.println("");
+		}
+
 		int maxDelta = 0;
 		for (int i = 0; i < pixels.size(); ++i)
 		{
@@ -518,8 +539,18 @@ public class Main
 
 	private static void generateEdge(Integer[] sortedSegments, LinkedList<RunLengthEncoding> edgeImage, Block lastBlock, Block thisBlock, Block nextBlock)
 	{
+		if (isDebug)
+		{
+			System.out.println("lastBlock: " + lastBlock.toString());
+			System.out.println("thisBlock: " + thisBlock.toString());
+			System.out.println("nextBlock: " + nextBlock.toString());
+		}
+
 		for (int j = 0; j < sortedSegments.length; ++j)
 		{
+			if (isDebug)
+				System.out.println("segment: " + j);
+
 			Vector<Integer> pixels = new Vector<Integer>();
 			Vector<Integer> leftPixels = new Vector<Integer>();
 			Vector<Integer> rightPixels = new Vector<Integer>();
@@ -531,18 +562,17 @@ public class Main
 
 			int lastLeftPixel = lastBlock.getPixelByOffset(offset-1, thisPixel);
 			int lastMiddlePixel = lastBlock.getPixelByOffset(offset, thisPixel);
-			int lastRightPixel = lastBlock.getPixelByOffset(offset+1, thisPixel);
+			int lastRightPixel = lastBlock.getPixelByOffset(offset+length, thisPixel);
 
 			int leftPixel = thisBlock.getPixelByOffset(offset-1, thisPixel);
-			int rightPixel = thisBlock.getPixelByOffset(offset+1, thisPixel);
+			int rightPixel = thisBlock.getPixelByOffset(offset+length, thisPixel);
 
 			int nextLeftPixel = nextBlock.getPixelByOffset(offset-1, thisPixel);
 			int nextMiddlePixel = nextBlock.getPixelByOffset(offset, thisPixel);
-			int nextRightPixel = nextBlock.getPixelByOffset(offset+1, thisPixel);
+			int nextRightPixel = nextBlock.getPixelByOffset(offset+length, thisPixel);
 
-			System.out.println("lastBlock: " + lastBlock.toString());
-			System.out.println("thisBlock: " + thisBlock.toString());
-			System.out.println("nextBlock: " + nextBlock.toString());
+			int remainingLength = length;
+			if (remainingLength > 0)
 			{
 				leftPixels.add(lastLeftPixel);
 				leftPixels.add(lastMiddlePixel);
@@ -559,29 +589,40 @@ public class Main
 					leftPixels.add(nextRightPixel);
 
 				int pixel = findMaxDelta(leftPixels, thisPixel);
+
 				edgeImage.add(new RunLengthEncoding(pixel, 1));
+
+				remainingLength--;
+
+				if (isDebug)
+					System.out.println("edge: " + pixel + " " + 1);
 			}
 
-			if (length > 2)
+			if (remainingLength > 1)
 			{
 				pixels.add(lastMiddlePixel);
 
 				pixels.add(nextMiddlePixel);
 
 				int pixel = findMaxDelta(pixels, thisPixel);
-				edgeImage.add(new RunLengthEncoding(pixel, length-2));
+				edgeImage.add(new RunLengthEncoding(pixel, remainingLength-1));
+
+				remainingLength = 1;
+
+				if (isDebug)
+					System.out.println("edge: " + pixel + " " + (remainingLength-1));
 			}
 
-			if (length > 1)
+			if (remainingLength > 0)
 			{
 				if (length == 1)
 					rightPixels.add(lastLeftPixel);
 				rightPixels.add(lastMiddlePixel);
 				rightPixels.add(lastRightPixel);
 
-				rightPixels.add(rightPixel);
 				if (length == 1)
 					rightPixels.add(leftPixel);
+				rightPixels.add(rightPixel);
 
 				if (length == 1)
 					rightPixels.add(nextLeftPixel);
@@ -590,6 +631,9 @@ public class Main
 
 				int pixel = findMaxDelta(rightPixels, thisPixel);
 				edgeImage.add(new RunLengthEncoding(pixel, 1));
+
+				if (isDebug)
+					System.out.println("edge: " + pixel + " " + 1);
 			}
 		}
 	}
