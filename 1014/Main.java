@@ -61,35 +61,9 @@ public class Main
 
 		int halfValue = totalValue / 2;
 
-		int[] marblesUsage = new int[marblesPerValue.length];
-
-		/*
-		int[] marblesToBeSaved = new int[6] {
-			2*3*4*5*6,
-			1*3*4*5*6,
-			1*2*4*5*6,
-			1*2*3*5*6,
-			1*2*3*4*6,
-			1*2*3*4*5,
-		};
-
-		int[] marblesForPreprocessing = new int[6];
-		for (int i = 0; i < 6; ++i)
-		{
-			if (marblesToBeSaved[i] < marblesPerValue[i])
-			{
-				marblesForPreprocessing[i] = marblesPerValue[i] - marblesToBeSaved[i];
-			}
-			else
-			{
-				marblesForPreprocessing[i] = 0;
-			}
-		}
-		*/
-
 		int[] maxValues = maxValueFromCurrentValueToLowestValue(marblesPerValue);
 
-		return canPack(marblesPerValue, marblesUsage, maxValues, halfValue, 6);
+		return canPack(marblesPerValue, maxValues, halfValue, 6);
 	}
 
 	public static int totalValue(int[] marblesPerValue)
@@ -116,7 +90,7 @@ public class Main
 		return maxValues;
 	}
 
-	public static boolean canPack(int[] marblesPerValue, int[] marblesUsage, int[] maxValues, int targetValue, int currentValue)
+	public static boolean canPack(int[] marblesPerValue, int[] maxValues, int targetValue, int currentValue)
 	{
 		if (targetValue == 0)
 			return true;
@@ -153,9 +127,9 @@ public class Main
 			int newTargetValue = targetValue - currentValue * i;
 
 			marblesPerValue[currentValue-1] -= i;
-			if (canPack(marblesPerValue, marblesUsage, maxValues, newTargetValue, currentValue-1))
+			if (canPack(marblesPerValue, maxValues, newTargetValue, currentValue-1))
 				return true;
-			marblesUsage[currentValue-1] += i;
+			marblesPerValue[currentValue-1] += i;
 		}
 
 		return false;
