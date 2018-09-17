@@ -95,7 +95,7 @@ my @sorted = sort {
 		return $a->[2] <=> $b->[2];
 	}
 	else {
-		$a->[1] <=> $b->[1];
+		$b->[1] <=> $a->[1];
 	}
 } @processed;
 
@@ -116,4 +116,4 @@ for my $i (1..@{$selected->[0]}) {
 print "===\n";
 print "Jury #1\n";
 print "Best jury has value $sumP for prosecution and value $sumD for defence:\n";
-print " " . join(" ", @{$selected->[0]}) . "\n";
+print " " . join(" ", map {$_+1} @{$selected->[0]}) . "\n";
