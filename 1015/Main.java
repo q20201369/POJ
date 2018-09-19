@@ -97,6 +97,32 @@ public class Main
 		}
 
 		Vector<JurySelection> jurySelections = new Vector<JurySelection>();
+
+		Vector<Jury> tempJuries = new Vector<Jury>();
+		tempJuries.addAll(allJuries);
+
+		Vector<Jury> juriesWithMinDelta = new Vector<Jury>();
+
+		Vector<Vector<Jury>> juriesSelected = findJuries(allJuries, m);
+		for (int i = 0; i < juriesSelected.size(); ++i)
+		{
+			JurySelection selected = new JurySelection();
+			selected.juries.addAll(juriesSelected.get(i));
+			// FIXME: calculate other fields of jury selection
+			int sumOfDelta = 0;
+			int sumOfSum = 0;
+			for (int j = 0; j < selected.juries.size(); ++j)
+			{
+				sumOfDelta += selected.juries.get(j).delta;
+				sumOfSum += selected.juries.get(j).sum;
+			}
+			selected.sumOfDelta = sumOfDelta;
+			selected.sumOfSum = sumOfSum;
+
+			jurySelections.add(selected);
+		}
+
+		/*
 		for (int i = 0; i < n-m+1; ++i)
 		{
 			JurySelection currentSelection = new JurySelection();
@@ -127,6 +153,7 @@ public class Main
 
 			jurySelections.set(i, currentSelection);
 		}
+		*/
 
 		Collections.sort(jurySelections, new JurySelection());
 
@@ -222,6 +249,191 @@ public class Main
 		*/
 
 		return selection;
+	}
+
+	/*
+	public Vector<JurySelection> findJurySelectionsWithMinimalDelta(int m, Vector<Jury> allJuries)
+	{
+		while (allJuries.size() > 1)
+		{
+			int minSum = Integer.MAX_VALUE;
+			int jWithMinSum = 0;
+			int kWithMinSum = 0;
+			for (int j = 0; j < tempJuries.size() - 1; ++j)
+			{
+				for (int k = j+1; k < tempJuries(); ++k)
+				{
+					int sum = tempJuries.get(j) + tempJuries.get(k);
+					if (sum < minSum)
+					{
+						minSum = sum;
+						jWithMinSum = j;
+						kWithMinSum = k;
+					}
+				}
+			}
+
+			juriesWithMinDelta.add(tempJuries.get(jWithMinSum));
+			juriesWithMinDelta.add(tempJuries.get(kWithMinSum));
+			if (jWithMinSum < kWithMinSum)
+			{
+				tempJuries.remove(kWithMinSum);
+				tempJuries.remove(jWithMinSum);
+			}
+			else
+			{
+				tempJuries.remove(jWithMinSum);
+				tempJuries.remove(kWithMinSum);
+			}
+
+			Jury fakeJury = new Jury();
+			jury.id = -1;
+			jury.delta = minSum;
+		}
+
+		for (int i = juriesWithMinDelta.size() - 1; i >= 0; --i)
+		{
+			if (juriesWithMinDelta.get(i).id < 0)
+				juriesWithMinDelta.remove(i);
+		}
+	}
+	*/
+
+	public static Vector<Vector<Jury>> findJuries(Vector<Jury> allJuries, int m)
+	{
+		Vector<Vector<Jury>> resultJuries = new Vector<Vector<Jury>>();
+
+		if (m <= 0)
+		{
+			resultJuries.add(new Vector<Jury>());
+			return resultJuries;
+		}
+
+		if (m == 1)
+		{
+			int minDelta = Integer.MAX_VALUE;
+			int iMin = -1;
+			for (int i = 0; i < allJuries.size(); ++i)
+			{
+				if (allJuries.get(i).id >= 0 && allJuries.get(i).delta < minDelta)
+				{
+					minDelta = allJuries.get(i).delta;
+					iMin = i;
+				}
+			}
+
+			for (int i = 0; i < allJuries.size(); ++i)
+			{
+				if (allJuries.get(i).id >= 0 && allJuries.get(i).delta == minDelta)
+				{
+					Vector<Jury> tempJuries = new Vector<Jury>();
+					tempJuries.add(allJuries.get(i));
+					resultJuries.add(tempJuries);
+				}
+			}
+
+			return resultJuries;
+		}
+
+		int standaloneJuries = 0;
+		for (int i = 0; i < allJuries.size(); ++i)
+		{
+			if (allJuries.get(i).id >= 0)
+				standaloneJuries++;
+		}
+
+		int minDeltaSum = Integer.MAX_VALUE;
+		int iMin = 0;
+		int jMin = 0;
+		for (int i = 0; i < allJuries.size() - 1; ++i)
+		{
+			for (int j = i + 1; j < allJuries.size(); ++j)
+			{
+				int sum = allJuries.get(i).delta + allJuries.get(j).delta;
+				sum = Math.abs(sum);
+				if (sum < minDeltaSum)
+				{
+					minDeltaSum = sum;
+					iMin = i;
+					jMin = j;
+				}
+			}
+		}
+
+		Vector<Vector<Jury>> possibleJuries = new Vector<Vector<Jury>>();
+		Vector<Vector<Jury>> possibleAddedJuries = new Vector<Vector<Jury>>();
+		for (int i = 0; i < allJuries.size() - 1; ++i)
+		{
+			for (int j = i + 1; j < allJuries.size(); ++j)
+			{
+				int sumOfDelta = allJuries.get(i).delta + allJuries.get(j).delta;
+				sumOfDelta = Math.abs(sumOfDelta);
+				if (sumOfDelta == minDeltaSum)
+				{
+					Vector<Jury> juriesToBeAdded = new Vector<Jury>();
+					if (allJuries.get(i).id >= 0)
+						juriesToBeAdded.add(allJuries.get(i));
+					if (allJuries.get(j).id >= 0)
+						juriesToBeAdded.add(allJuries.get(j));
+					possibleAddedJuries.add(juriesToBeAdded);
+
+					Vector<Jury> newJuries = new Vector<Jury>();
+					newJuries.addAll(allJuries);
+					JuryPair juries = new JuryPair(allJuries.get(i), allJuries.get(j));
+					newJuries.remove(j);
+					newJuries.remove(i);
+					newJuries.add(juries);
+
+					possibleJuries.add(newJuries);
+				}
+			}
+		}
+		
+
+		int maxSumOfSum = -1;
+		for (int i = 0; i < possibleJuries.size(); ++i)
+		{
+			Vector<Jury> juries = possibleJuries.get(i);
+			Jury lastJury = juries.get(juries.size()-1);
+			if (lastJury.sum > maxSumOfSum)
+			{
+				maxSumOfSum = lastJury.sum;
+			}
+		}
+
+		Vector<Vector<Jury>> finalJuries = new Vector<Vector<Jury>>();
+		Vector<Vector<Jury>> finalAddedJuries = new Vector<Vector<Jury>>();
+		for (int i = 0; i < possibleJuries.size(); ++i)
+		{
+			Vector<Jury> juries = possibleJuries.get(i);
+			if (juries.get(juries.size()-1).sum == maxSumOfSum)
+			{
+				finalJuries.add(juries);
+				finalAddedJuries.add(possibleAddedJuries.get(i));
+			}
+		}
+
+		for (int i = 0; i < finalJuries.size(); ++i)
+		{
+			Vector<Jury> juries = finalJuries.get(i);
+			int newStandaloneJuries = 0;
+			for (int j = 0; j < juries.size(); ++j)
+			{
+				if (juries.get(j).id >= 0)
+					newStandaloneJuries++;
+			}
+
+			Vector<Vector<Jury>> returnedJuries = findJuries(juries, m-(standaloneJuries-newStandaloneJuries));
+			for (int j = 0; j < returnedJuries.size(); ++j)
+			{
+				Vector<Jury> combinedJuries = new Vector<Jury>();
+				combinedJuries.addAll(finalAddedJuries.get(i));
+				combinedJuries.addAll(returnedJuries.get(j));
+				resultJuries.add(combinedJuries);
+			}
+		}
+
+		return resultJuries;
 	}
 }
 
@@ -331,4 +543,29 @@ class JurySelection implements Comparator<JurySelection>
 		return str;
 	}
 }
+
+class JuryPair extends Jury
+{
+	public Jury left;
+	public Jury right;
+
+	public JuryPair(Jury left, Jury right)
+	{
+		this.id = -1;
+		this.left = left;
+		this.right = right;
+		this.delta = this.left.delta + this.right.delta;
+		this.sum = this.left.sum + this.right.sum;
+	}
+
+	public String toString()
+	{
+		return "{"
+			+ "delta:" + this.delta + " "
+			+ "sum:" + this.sum + " "
+			+ "(" + this.left.toString() + " | " + this.right.toString() + ")"
+			+ "}";
+	}
+}
+
 
