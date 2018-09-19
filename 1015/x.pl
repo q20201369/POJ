@@ -47,8 +47,8 @@ sub findJury {
 }
 
 
-my $n = 4;
-my $m = 2;
+my $n = 10;
+my $m = 5;
 
 my @grades = generateTestCase $n, $n;
 
@@ -74,11 +74,11 @@ sub processSelection {
 
 		#print "$pg - $dg\n";
 
-		$delta += abs($pg-$dg);
+		$delta += $pg-$dg;
 		$sum += $pg+$dg;
 	}
 
-	return $delta, $sum;
+	return abs($delta), $sum;
 }
 
 my @processed;
