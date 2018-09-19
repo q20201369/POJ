@@ -63,7 +63,7 @@ public class Main
 
 		Vector<Integer> selection = new Vector<Integer>();
 
-		Jury[] deltaGrade = new Jury[prosecutionGrade.length];
+		Vector<Jury> allJuries = new Vector<Jury>();
 		for (int i = 0; i < prosecutionGrade.length; ++i)
 		{
 			Jury jury = new Jury();
@@ -73,24 +73,24 @@ public class Main
 			jury.sum = prosecutionGrade[i] + defenceGrade[i];
 			jury.id = i;
 
-			deltaGrade[i] = jury;
+			allJuries.add(jury);
 		}
 
-		Arrays.sort(deltaGrade, new Jury());
+		Collections.sort(allJuries, new Jury());
 
 		HashMap<Integer, Vector<Jury>> deltaMap = new HashMap<Integer, Vector<Jury>>();
-		for (int i = 0; i < deltaGrade.length; ++i)
+		for (int i = 0; i < allJuries.size(); ++i)
 		{
-			int key = deltaGrade[i].delta;
+			int key = allJuries.get(i).delta;
 			if (deltaMap.containsKey(key))
 			{
 				Vector<Jury> juries = deltaMap.get(key);
-				juries.add(deltaGrade[i]);
+				juries.add(allJuries.get(i));
 			}
 			else
 			{
 				Vector<Jury> juries = new Vector<Jury>();
-				juries.add(deltaGrade[i]);
+				juries.add(allJuries.get(i));
 
 				deltaMap.put(key, juries);
 			}
@@ -108,8 +108,8 @@ public class Main
 
 				for (int j = 0; j < m; ++j)
 				{
-					deltaSum += deltaGrade[j].delta;
-					sumOfSum += deltaGrade[j].sum;
+					deltaSum += allJuries.get(j).delta;
+					sumOfSum += allJuries.get(j).sum;
 				}
 
 				currentSelection.sumOfDelta = deltaSum;
@@ -118,12 +118,12 @@ public class Main
 			else
 			{
 				JurySelection lastSelection = jurySelections[i-1];
-				currentSelection.sumOfDelta = lastSelection.sumOfDelta + deltaGrade[i+m-1].delta - deltaGrade[i-1].delta;
-				currentSelection.sumOfSum = lastSelection.sumOfSum + deltaGrade[i+m-1].sum - deltaGrade[i-1].sum;
+				currentSelection.sumOfDelta = lastSelection.sumOfDelta + allJuries.get(i+m-1).delta - allJuries.get(i-1).delta;
+				currentSelection.sumOfSum = lastSelection.sumOfSum + allJuries.get(i+m-1).sum - allJuries.get(i-1).sum;
 			}
 
 			for (int j = i; j < i+m; ++j)
-				currentSelection.juries.add(deltaGrade[j]);
+				currentSelection.juries.add(allJuries.get(j));
 
 			jurySelections[i] = currentSelection;
 		}
@@ -207,13 +207,13 @@ public class Main
 		selection.addAll(finalJuries);
 
 		/*
-		int lastDelta = deltaGrade[m-1].delta;
+		int lastDelta = allJuries.get(m-1).delta;
 		int extendedM = m;
 
 		// extend
 		for (int i = m; i < prosecutionGrade.length; ++i)
 		{
-			if (deltaGrade[i].delta != lastDelta)
+			if (allJuries.get(i).delta != lastDelta)
 			{
 				extendedM = i + 1;
 				break;
