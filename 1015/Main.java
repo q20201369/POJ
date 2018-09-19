@@ -319,6 +319,10 @@ class JurySelection implements Comparator<JurySelection>
 	public String toString()
 	{
 		String str = "(";
+		str += "sumOfDelta: " + this.sumOfDelta;
+		str += " ";
+		str += "sumOfSum: " + this.sumOfSum;
+		str += " ";
 		for (int i = 0; i < juries.size(); ++i)
 		{
 			str += juries.get(i) + " ";
