@@ -391,24 +391,37 @@ public class Main
 		
 
 		int maxSumOfSum = -1;
-		for (int i = 0; i < possibleJuries.size(); ++i)
+		for (int i = 0; i < possibleAddedJuries.size(); ++i)
 		{
-			Vector<Jury> juries = possibleJuries.get(i);
-			Jury lastJury = juries.get(juries.size()-1);
-			if (lastJury.sum > maxSumOfSum)
+			Vector<Jury> juries = possibleAddedJuries.get(i);
+
+			int sum = 0;
+			for (int j = 0; j < juries.size(); ++j)
 			{
-				maxSumOfSum = lastJury.sum;
+				sum += juries.get(j).sum;
+			}
+
+			if (sum > maxSumOfSum)
+			{
+				maxSumOfSum = sum;
 			}
 		}
 
 		Vector<Vector<Jury>> finalJuries = new Vector<Vector<Jury>>();
 		Vector<Vector<Jury>> finalAddedJuries = new Vector<Vector<Jury>>();
-		for (int i = 0; i < possibleJuries.size(); ++i)
+		for (int i = 0; i < possibleAddedJuries.size(); ++i)
 		{
-			Vector<Jury> juries = possibleJuries.get(i);
-			if (juries.get(juries.size()-1).sum == maxSumOfSum)
+			Vector<Jury> juries = possibleAddedJuries.get(i);
+
+			int sum = 0;
+			for (int j = 0; j < juries.size(); ++j)
 			{
-				finalJuries.add(juries);
+				sum += juries.get(j).sum;
+			}
+
+			if (sum == maxSumOfSum)
+			{
+				finalJuries.add(possibleJuries.get(i));
 				finalAddedJuries.add(possibleAddedJuries.get(i));
 			}
 		}
