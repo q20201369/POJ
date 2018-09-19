@@ -118,8 +118,8 @@ public class Main
 			else
 			{
 				JurySelection lastSelection = jurySelections[i-1];
-				currentSelection.sumOfDelta = lastSelection.sumOfDelta + deltaGrade[i].delta - deltaGrade[i-1].delta;
-				currentSelection.sumOfSum = lastSelection.sumOfSum + deltaGrade[i].sum - deltaGrade[i-1].sum;
+				currentSelection.sumOfDelta = lastSelection.sumOfDelta + deltaGrade[i+m-1].delta - deltaGrade[i-1].delta;
+				currentSelection.sumOfSum = lastSelection.sumOfSum + deltaGrade[i+m-1].sum - deltaGrade[i-1].sum;
 			}
 
 			for (int j = i; j < i+m; ++j)
@@ -135,7 +135,7 @@ public class Main
 		Vector<JurySelection> sameDeltaJurySelections = new Vector<JurySelection>();
 		for (int i = 0; i < jurySelections.length; ++i)
 		{
-			if (jurySelections[i].sumOfDelta == jurySelections[0].sumOfDelta)
+			if (Math.abs(jurySelections[i].sumOfDelta) == Math.abs(jurySelections[0].sumOfDelta))
 			{
 				sameDeltaJurySelections.add(jurySelections[i]);
 
@@ -155,7 +155,7 @@ public class Main
 
 						Jury newJury = sameDeltaJuries.get(k);
 						Vector<Jury> newJuries = new Vector<Jury>();
-						for (int x = 0; x < j-1; ++x)
+						for (int x = 0; x < j; ++x)
 						{
 							newJuries.add(juries.get(x));
 						}
@@ -168,7 +168,7 @@ public class Main
 						JurySelection newJurySelection = new JurySelection();
 						newJurySelection.sumOfDelta = jurySelections[i].sumOfDelta;
 						newJurySelection.sumOfSum = jurySelections[i].sumOfSum + newJury.sum - juries.get(j).sum;
-
+						newJurySelection.juries = newJuries;
 
 						boolean hasDup = false;
 						HashSet<Integer> juriesIdSet = new HashSet<Integer>();
@@ -195,7 +195,7 @@ public class Main
 
 		Collections.sort(sameDeltaJurySelections, new JurySelection());
 
-		JurySelection finalSelection = jurySelections[0];
+		JurySelection finalSelection = sameDeltaJurySelections.get(0);
 
 		Vector<Integer> finalJuries = new Vector<Integer>();
 		for (int i = 0; i < finalSelection.juries.size(); ++i)
