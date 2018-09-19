@@ -67,6 +67,8 @@ public class Main
 		for (int i = 0; i < prosecutionGrade.length; ++i)
 		{
 			Jury jury = new Jury();
+			jury.prosecutionGrade = prosecutionGrade[i];
+			jury.defenceGrade = defenceGrade[i];
 			jury.delta = prosecutionGrade[i] - defenceGrade[i];
 			jury.sum = prosecutionGrade[i] + defenceGrade[i];
 			jury.id = i;
@@ -121,7 +123,7 @@ public class Main
 			}
 
 			for (int j = i; j < i+m; ++j)
-				currentSelection.juries.add(deltaGrade[j].id);
+				currentSelection.juries.add(deltaGrade[j]);
 
 			jurySelections[i] = currentSelection;
 		}
@@ -137,11 +139,7 @@ public class Main
 			{
 				sameDeltaJurySelections.add(jurySelections[i]);
 
-				Vector<Jury> juries = new Vector<Jury>();
-				for (int j = 0; j < jurySelections[i].juries.size(); ++j)
-				{
-					juries.add(deltaGrade[jurySelections[i].juries.get(j)]);
-				}
+				Vector<Jury> juries = jurySelections[i].juries;
 
 				for (int j = 0; j < juries.size(); ++j)
 				{
@@ -197,7 +195,13 @@ public class Main
 
 		Collections.sort(sameDeltaJurySelections, new JurySelection());
 
-		Vector<Integer> finalJuries = jurySelections[0].juries;
+		JurySelection finalSelection = jurySelections[0];
+
+		Vector<Integer> finalJuries = new Vector<Integer>();
+		for (int i = 0; i < finalSelection.juries.size(); ++i)
+		{
+			finalJuries.add(finalSelection.juries.get(i).id);
+		}
 		Collections.sort(finalJuries);
 
 		selection.addAll(finalJuries);
@@ -280,7 +284,7 @@ class Jury implements Comparator<Jury>
 
 class JurySelection implements Comparator<JurySelection>
 {
-	public Vector<Integer> juries = new Vector<Integer>();
+	public Vector<Jury> juries = new Vector<Jury>();
 	public int sumOfDelta;
 	public int sumOfSum;
 
