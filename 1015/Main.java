@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.Comparator;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Main
 {
@@ -74,41 +76,131 @@ public class Main
 
 		Arrays.sort(deltaGrade, new Jury());
 
-		int initialSumDelta = 0;
-		int initialSumOfSum = 0;
-		for (int i = 0; i < m; ++i)
+		HashMap<Integer, Vector<Jury>> deltaMap = new HashMap<Integer, Vector<Jury>>();
+		for (int i = 0; i < deltaGrade.length; ++i)
 		{
-			initialSumDelta += deltaGrade[i].delta;
-			initialSumOfSum += deltaGrade[i].sum;
+			int key = deltaGrade[i].delta;
+			if (deltaMap.containsKey(key))
+			{
+				Vector<Jury> juries = deltaMap.get(key);
+				juries.add(deltaGrade[i]);
+			}
+			else
+			{
+				Vector<Jury> juries = new Vector<Jury>();
+				juries.add(deltaGrade[i]);
+
+				deltaMap.put(key, juries);
+			}
 		}
 
 		JurySelection[] jurySelections = new JurySelection[n-m+1];
-		jurySelections[0] = new JurySelection();
-		jurySelections[0].sumOfDelta = initialSumDelta;
-		jurySelections[0].sumOfSum = initialSumOfSum;
-		for (int i = 0; i < m; ++i)
+		for (int i = 0; i < n-m+1; ++i)
 		{
-			jurySelections[0].juries.add(deltaGrade[i].id);
-		}
-		
-		for (int i = 1; i < n-m+1; ++i)
-		{
-			jurySelections[i] = new JurySelection();
-			jurySelections[i].sumOfDelta = jurySelections[i-1].sumOfDelta + deltaGrade[i].delta - deltaGrade[i-1].delta;
-			jurySelections[i].sumOfSum = jurySelections[i-1].sumOfSum + deltaGrade[i].sum - deltaGrade[i-1].sum;
-			for (int j = i; j < i+m; ++j)
+			JurySelection currentSelection = new JurySelection();
+
+			if (i == 0)
 			{
-				jurySelections[i].juries.add(deltaGrade[j].id);
+				int deltaSum = 0;
+				int sumOfSum = 0;
+
+				for (int j = 0; j < m; ++j)
+				{
+					deltaSum += deltaGrade[j].delta;
+					sumOfSum += deltaGrade[j].sum;
+				}
+
+				currentSelection.sumOfDelta = deltaSum;
+				currentSelection.sumOfSum = sumOfSum;
 			}
+			else
+			{
+				JurySelection lastSelection = jurySelections[i-1];
+				currentSelection.sumOfDelta = lastSelection.sumOfDelta + deltaGrade[i].delta - deltaGrade[i-1].delta;
+				currentSelection.sumOfSum = lastSelection.sumOfSum + deltaGrade[i].sum - deltaGrade[i-1].sum;
+			}
+
+			for (int j = i; j < i+m; ++j)
+				currentSelection.juries.add(deltaGrade[j].id);
+
+			jurySelections[i] = currentSelection;
 		}
 
 		Arrays.sort(jurySelections, new JurySelection());
 
-		/*
-		for (int i = 0; i < m; ++i)
-			selection.add(jurySelections[0].juries.get(i));
-			*/
-		selection.addAll(jurySelections[0].juries);
+		// expand selections w/ selections w/ the same delta
+		// e.g. expand {delta:1, juries:[1 2]} to {delta:1, juries:[1 3]} if jury #3 has the same delta as #2
+		Vector<JurySelection> sameDeltaJurySelections = new Vector<JurySelection>();
+		for (int i = 0; i < jurySelections.length; ++i)
+		{
+			if (jurySelections[i].sumOfDelta == jurySelections[0].sumOfDelta)
+			{
+				sameDeltaJurySelections.add(jurySelections[i]);
+
+				Vector<Jury> juries = new Vector<Jury>();
+				for (int j = 0; j < jurySelections[i].juries.size(); ++j)
+				{
+					juries.add(deltaGrade[jurySelections[i].juries.get(j)]);
+				}
+
+				for (int j = 0; j < juries.size(); ++j)
+				{
+					Vector<Jury> sameDeltaJuries = deltaMap.get(juries.get(j).delta);
+					if (sameDeltaJuries == null)
+						continue;
+
+					for (int k = 0; k < sameDeltaJuries.size(); ++k)
+					{
+						// remove the same Jury used in the base jury selection
+						if (sameDeltaJuries.get(k).id == juries.get(j).id)
+							continue;
+
+						Jury newJury = sameDeltaJuries.get(k);
+						Vector<Jury> newJuries = new Vector<Jury>();
+						for (int x = 0; x < j-1; ++x)
+						{
+							newJuries.add(juries.get(x));
+						}
+						newJuries.add(newJury);
+						for (int x = j+1; x < m; ++x)
+						{
+							newJuries.add(juries.get(x));
+						}
+
+						JurySelection newJurySelection = new JurySelection();
+						newJurySelection.sumOfDelta = jurySelections[i].sumOfDelta;
+						newJurySelection.sumOfSum = jurySelections[i].sumOfSum + newJury.sum - juries.get(j).sum;
+
+
+						boolean hasDup = false;
+						HashSet<Integer> juriesIdSet = new HashSet<Integer>();
+						for (int x = 0; x < m; ++x)
+						{
+							int id = newJuries.get(x).id;
+							if (juriesIdSet.contains(id))
+							{
+								hasDup = true;
+								break;
+							}
+
+							juriesIdSet.add(id);
+						}
+
+						if (!hasDup)
+						{
+							sameDeltaJurySelections.add(newJurySelection);
+						}
+					}
+				}
+			}
+		}
+
+		Collections.sort(sameDeltaJurySelections, new JurySelection());
+
+		Vector<Integer> finalJuries = jurySelections[0].juries;
+		Collections.sort(finalJuries);
+
+		selection.addAll(finalJuries);
 
 		/*
 		int lastDelta = deltaGrade[m-1].delta;
@@ -131,6 +223,8 @@ public class Main
 
 class Jury implements Comparator<Jury>
 {
+	public int prosecutionGrade;
+	public int defenceGrade;
 	public int delta;
 	public int sum;
 	public int id;
@@ -167,6 +261,21 @@ class Jury implements Comparator<Jury>
 
 		return false;
 	}
+
+	public String toString()
+	{
+		return "{"
+			+ "id:" + this.id
+			+ " "
+			+ "pg:" + this.prosecutionGrade
+			+ " "
+			+ "dg:" + this.defenceGrade
+			+ " "
+			+ "delta:" + this.delta
+			+ " "
+			+ "sum:" + this.sum
+			+ "}";
+	}
 }
 
 class JurySelection implements Comparator<JurySelection>
@@ -201,6 +310,17 @@ class JurySelection implements Comparator<JurySelection>
 
 			return 0;
 		}
+	}
+
+	public String toString()
+	{
+		String str = "(";
+		for (int i = 0; i < juries.size(); ++i)
+		{
+			str += juries.get(i) + " ";
+		}
+		str += ")";
+		return str;
 	}
 }
 
