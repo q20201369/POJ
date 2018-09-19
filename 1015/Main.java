@@ -96,7 +96,7 @@ public class Main
 			}
 		}
 
-		JurySelection[] jurySelections = new JurySelection[n-m+1];
+		Vector<JurySelection> jurySelections = new Vector<JurySelection>();
 		for (int i = 0; i < n-m+1; ++i)
 		{
 			JurySelection currentSelection = new JurySelection();
@@ -117,7 +117,7 @@ public class Main
 			}
 			else
 			{
-				JurySelection lastSelection = jurySelections[i-1];
+				JurySelection lastSelection = jurySelections.get(i-1);
 				currentSelection.sumOfDelta = lastSelection.sumOfDelta + allJuries.get(i+m-1).delta - allJuries.get(i-1).delta;
 				currentSelection.sumOfSum = lastSelection.sumOfSum + allJuries.get(i+m-1).sum - allJuries.get(i-1).sum;
 			}
@@ -125,21 +125,21 @@ public class Main
 			for (int j = i; j < i+m; ++j)
 				currentSelection.juries.add(allJuries.get(j));
 
-			jurySelections[i] = currentSelection;
+			jurySelections.set(i, currentSelection);
 		}
 
-		Arrays.sort(jurySelections, new JurySelection());
+		Collections.sort(jurySelections, new JurySelection());
 
 		// expand selections w/ selections w/ the same delta
 		// e.g. expand {delta:1, juries:[1 2]} to {delta:1, juries:[1 3]} if jury #3 has the same delta as #2
 		Vector<JurySelection> sameDeltaJurySelections = new Vector<JurySelection>();
-		for (int i = 0; i < jurySelections.length; ++i)
+		for (int i = 0; i < jurySelections.size(); ++i)
 		{
-			if (Math.abs(jurySelections[i].sumOfDelta) == Math.abs(jurySelections[0].sumOfDelta))
+			if (Math.abs(jurySelections.get(i).sumOfDelta) == Math.abs(jurySelections.get(0).sumOfDelta))
 			{
-				sameDeltaJurySelections.add(jurySelections[i]);
+				sameDeltaJurySelections.add(jurySelections.get(i));
 
-				Vector<Jury> juries = jurySelections[i].juries;
+				Vector<Jury> juries = jurySelections.get(i).juries;
 
 				for (int j = 0; j < juries.size(); ++j)
 				{
@@ -166,8 +166,8 @@ public class Main
 						}
 
 						JurySelection newJurySelection = new JurySelection();
-						newJurySelection.sumOfDelta = jurySelections[i].sumOfDelta;
-						newJurySelection.sumOfSum = jurySelections[i].sumOfSum + newJury.sum - juries.get(j).sum;
+						newJurySelection.sumOfDelta = jurySelections.get(i).sumOfDelta;
+						newJurySelection.sumOfSum = jurySelections.get(i).sumOfSum + newJury.sum - juries.get(j).sum;
 						newJurySelection.juries = newJuries;
 
 						boolean hasDup = false;
