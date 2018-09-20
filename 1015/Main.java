@@ -103,7 +103,7 @@ public class Main
 
 		Vector<Jury> juriesWithMinDelta = new Vector<Jury>();
 
-		Vector<Vector<Jury>> juriesSelected = findJuries(allJuries, m);
+		Vector<Vector<Jury>> juriesSelected = findAllJuries(allJuries, m, 0);
 		for (int i = 0; i < juriesSelected.size(); ++i)
 		{
 			JurySelection selected = new JurySelection();
@@ -442,6 +442,86 @@ public class Main
 				Vector<Jury> combinedJuries = new Vector<Jury>();
 				combinedJuries.addAll(finalAddedJuries.get(i));
 				combinedJuries.addAll(returnedJuries.get(j));
+				resultJuries.add(combinedJuries);
+			}
+		}
+
+		return resultJuries;
+	}
+
+	public static Vector<Vector<Jury>> findAllJuries(Vector<Jury> allJuries, int m, int targetDeltaSum)
+	{
+		Vector<Vector<Jury>> resultJuries = new Vector<Vector<Jury>>();
+
+		if (m <= 0)
+		{
+			resultJuries.add(new Vector<Jury>());
+			return resultJuries;
+		}
+
+		if (m == 1)
+		{
+			int minDelta = Integer.MAX_VALUE;
+			int iMin = -1;
+			for (int i = 0; i < allJuries.size(); ++i)
+			{
+				int delta = Math.abs(allJuries.get(i).delta - targetDeltaSum);
+				if (allJuries.get(i).id >= 0 &&  delta < minDelta)
+				{
+					minDelta = delta;
+					iMin = i;
+				}
+			}
+
+			for (int i = 0; i < allJuries.size(); ++i)
+			{
+				int delta = Math.abs(allJuries.get(i).delta - targetDeltaSum);
+				if (allJuries.get(i).id >= 0 && delta == minDelta)
+				{
+					Vector<Jury> tempJuries = new Vector<Jury>();
+					tempJuries.add(allJuries.get(i));
+					resultJuries.add(tempJuries);
+				}
+			}
+
+			return resultJuries;
+		}
+
+		// for each jury, find another jury which together have the nearest sum of delta that equals to targetDeltaSum
+		for (int i = 0; i < allJuries.size() - 1; ++i)
+		{
+			int nearestAbsDeltaSum = Integer.MAX_VALUE;
+			int nearestDeltaSum = Integer.MAX_VALUE;
+			int jNearest = -1;
+			for (int j = i + 1; j < allJuries.size(); ++j)
+			{
+				int sumDelta = allJuries.get(i).delta + allJuries.get(j).delta;
+				int absDelta = Math.abs(sumDelta - targetDeltaSum);
+				if (absDelta < nearestAbsDeltaSum)
+				{
+					nearestAbsDeltaSum = absDelta;
+					jNearest = j;
+					nearestDeltaSum = sumDelta;
+				}
+			}
+
+			Vector<Jury> consumedJuries = new Vector<Jury>();
+			consumedJuries.add(allJuries.get(i));
+			consumedJuries.add(allJuries.get(jNearest));
+
+			Vector<Jury> newJuries = new Vector<Jury>();
+			newJuries.addAll(allJuries);
+			newJuries.remove(jNearest);
+			newJuries.remove(i);
+
+			int newTargetDeltaSum = targetDeltaSum - nearestDeltaSum;
+			Vector<Vector<Jury>> returnedJuries = findAllJuries(newJuries, m-2, newTargetDeltaSum);
+			for (int j = 0; j < returnedJuries.size(); ++j)
+			{
+				Vector<Jury> combinedJuries = new Vector<Jury>();
+				combinedJuries.addAll(consumedJuries);
+				combinedJuries.addAll(returnedJuries.get(j));
+
 				resultJuries.add(combinedJuries);
 			}
 		}
