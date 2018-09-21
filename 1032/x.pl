@@ -10,31 +10,40 @@ sub findMax {
 	my $max_delegates = 0;
 	my $max_remainingDelegates = 0;
 	my $max_delegatesGroups = 0;
+	my @max_numbers;
 	for my $groups (1..$n) {
-		my $delegates = int($n / $groups);
-		my $remainingDelegates = $n - $delegates * $groups;
+		my $extra = ($groups * ($groups - 1)) / 2;
+		my $base = int(($n - $extra) / $groups);
+		my $remainder = $n - $base * $groups - $extra;
+		my $remainderIndexFromStart = $remainder > 0 ? $groups - $remainder : 999999;
 
-		my $delegatesGroups = $groups - $remainingDelegates;
-		my $remainingGroups = $remainingDelegates;
+		next if ($remainder < 0);
 
-		my $combination = ($delegates ** $delegatesGroups) * ($remainingDelegates > 0 ? (($delegates+1) ** $remainingDelegates) : 1);
+		my $combination = 1;
+		my @xs;
+		for my $x ($base..($base+$groups-1)) {
+			my $multiplier = $x;
+			#print "x: $x $remainder $remainderIndexFromStart $base $extra $groups\n";
+			if ($x >= $remainderIndexFromStart + $base) {
+				$multiplier = $x+1;
+			}
 
-		#print "$n: $combination, $delegates**$delegatesGroups * {$delegates+1}**$remainingDelegates\n";
+			push @xs, $multiplier;
+			$combination *= $multiplier;
+		}
 
 		if ($combination > $max_combination)
 		{
 			$max_combination = $combination;
-			$max_delegates = $delegates;
-			$max_remainingDelegates = $remainingDelegates;
-			$max_delegatesGroups = $delegatesGroups;
+			@max_numbers = @xs;
 		}
 	}
 
-	print "$n: $max_combination, $max_delegates**$max_delegatesGroups * {$max_delegates+1}**$max_remainingDelegates\n";
+	print "$n: $max_combination @" . join(" ", @max_numbers) . "\n";
 }
 
-#findMax 6;
-for my $n (5..30) {
+#findMax 10;
+for my $n (5..70) {
 	findMax $n;
 }
 
