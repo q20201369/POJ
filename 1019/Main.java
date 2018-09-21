@@ -21,16 +21,16 @@ public class Main
 			int position = sc.nextInt();
 			int digit = 0;
 
-			int upperBound = 0;
+			int upperBound = 31268; // calculated offline
 			int lowerBound = 0;
-			for (int width = 1; width < 5; ++width)
+			/* // offline calculation of upperBound corresponding to the max input 2147483647
+			for (int i = 9999; i < 99999; ++i)
 			{
-				upperBound = pow(width) - 1;
-				lowerBound = pow(width-1) - 1;
-				long upperBoundLength = totalDigits(upperBound);
-				if (position <= upperBoundLength)
+				System.out.println(i + "=>" + totalDigits(i));
+				if (totalDigits(i) > 2147483647)
 					break;
 			}
+			*/
 
 			// find a number between lowerBound and upperBound
 			int number = 0;
