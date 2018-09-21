@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.math.BigInteger;
 
 public class Main
 {
@@ -66,8 +67,9 @@ public class Main
 
 	public static boolean fitNumber(long numberToFit, String numberSystem)
 	{
-		long lowerBound = 0;
-		long upperBound = 0;
+		BigInteger lowerBound = BigInteger.ZERO;
+		BigInteger upperBound = BigInteger.ZERO;
+		BigInteger number = BigInteger.valueOf(numberToFit);
 
 		int k = numberSystem.length();
 		for (int i = 0; i < k; ++i)
@@ -76,15 +78,17 @@ public class Main
 
 			if (direction == 'p')
 			{
-				upperBound += 1 << i;
+				upperBound = upperBound.setBit(i);
 			}
 			else
 			{
-				lowerBound -= 1 << i;
+				lowerBound = lowerBound.setBit(i);
 			}
 		}
 
-		if (lowerBound <= numberToFit && numberToFit <= upperBound)
+		lowerBound = lowerBound.negate();
+
+		if (lowerBound.compareTo(number) <= 0 && number.compareTo(upperBound) <= 0)
 			return true;
 
 		return false;
