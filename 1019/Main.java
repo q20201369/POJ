@@ -77,60 +77,10 @@ public class Main
 
 			int offsetInNumberHit = positionInNumber - numberDigits(numberHit-1) - 1;
 
-			/*
-			int widthOfPositionInNumber = ("" + positionInNumber).length();
-			for (int i = 1; i < widthOfPositionInNumber; ++i)
-			{
-				positionInNumber -= 9 * pow(i-1) * i;
-			}
-
-			int numberHit = (positionInNumber-1) / widthOfPositionInNumber;
-			if (widthOfPositionInNumber == 1)
-			{
-				// single digits starts from 1, but double digits start from 0
-				numberHit = positionInNumber / widthOfPositionInNumber;
-			}
-
-			for (int i = 1; i < widthOfPositionInNumber; ++i)
-			{
-				numberHit += pow(i-1) * 10;
-			}
-
-			int positionInNumberHit = (positionInNumber-1) % widthOfPositionInNumber;
-			*/
-
 			String numberHitString = "" + numberHit;
 			digit = numberHitString.charAt(offsetInNumberHit) - '0';
 
 			System.out.println(digit);
-
-			/*
-			if (positionInNumber == 0)
-			{
-				digit = 1;
-			}
-			if (0 <= positionInNumber && positionInNumber < 9)
-			{
-				digit = positionInNumber + 1;
-			}
-			if (9 <= positionInNumber && positionInNumber < 99)
-			{
-				positionInNumber -= 9 * 1;
-				int numberHit = positionInNumber / 2;
-				int positionInNumberHit = positionInNumber % 2;
-				if (positionInNumberHit == 0)
-					digit = (numberHit + 10) / 10;
-				else
-					digit = (numberHit + 10) % 10;
-			}
-			if (9 <= positionInNumber && positionInNumber < 99)
-			{
-				positionInNumber -= 9 * 1;
-				positionInNumber -= 90 * 2;
-				int numberHit = positionInNumber / 3;
-				int positionInNumberHit = positionInNumber % 3;
-			}
-			*/
 		}
 	}
 
@@ -155,21 +105,6 @@ public class Main
 		totalDigitsMap.put(number, result);
 
 		return result;
-
-		/*
-		if (number < 10)
-		{
-			result = number * (number + 1) / 2;
-		}
-		if (number >= 10 && number < 100)
-		{
-			return totalDigits(9) + (number - 9) * totalDigits(9) + (number - 9) * (number - 9 + 1) / 2 * 2;
-		}
-		if (number >= 100 & number < 1000)
-		{
-			return totalDigits(99) + (number - 99) * totalDigits(99) + (number - 99) * (number - 99 + 1) / 2 * 3;
-		}
-		*/
 	}
 
 	public static int numberDigits(int number)
