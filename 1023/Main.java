@@ -42,11 +42,11 @@ public class Main
 						factors += "1";
 						if (numberSystem.charAt(i) == 'p')
 						{
-							numberToFit -= 1<<(k-1-i);
+							numberToFit -= (long)1<<(k-1-i);
 						}
 						else
 						{
-							numberToFit += 1<<(k-1-i);
+							numberToFit += (long)1<<(k-1-i);
 						}
 					}
 				}
