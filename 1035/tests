@@ -1,0 +1,58 @@
+===
+i
+is
+has
+have
+be
+my
+more
+contest
+me
+too
+if
+award
+#
+me
+aware
+m
+contest
+hav
+oo
+or
+i
+fi
+mre
+#
+===
+me is correct
+aware: award
+m: i my me
+contest is correct
+hav: has have
+oo: too
+or:
+i is correct
+fi: i
+mre: more me
+===
+abcd
+abce
+ab
+#
+abc
+abd
+abce
+abcf
+b
+bce
+c
+#
+===
+abc: abcd abce ab
+abd: abcd ab
+abce is correct
+abcf: abcd abce
+b: ab
+bce: abce
+c:
+===
